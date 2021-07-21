@@ -7,7 +7,7 @@
         <q-card-section>
           <div class="row justify-center items-center">
             <div class="col-lg-2 col-xs-12">
-              <div class="text-right">
+              <div class="text-center">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/c/c8/Seal_of_the_University_of_Manila.jpeg" style="height:200px;">
               </div>
             </div>

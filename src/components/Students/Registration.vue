@@ -93,6 +93,26 @@
                   :rules="[ val => val && val.length > 0 || 'Please enter your Facebook Profile Link']"
                 />
               </q-card-section>
+              <q-card-section align="center">
+                
+                <vue-recaptcha v-if="showRecaptcha" siteKey="6LdATK8bAAAAAJ6IkKZE579Sd55FmzgqVj3MsG4d"
+                  size="normal" 
+                  theme="light"
+                  :tabindex="0"
+                  @verify="recaptchaVerified"
+                  @expire="recaptchaExpired"
+                  @fail="recaptchaFailed"
+                  ref="vueRecaptcha">
+                </vue-recaptcha>
+              </q-card-section>
+              <q-card-section v-if="errorMessage !== null">
+                <q-banner class="bg-red q-my-md">
+                  <template v-slot:avatar>
+                    <q-icon name="fas fa-exclamation-triangle" />
+                  </template>
+                  {{ this.errorMessage }}
+                </q-banner>
+              </q-card-section>
               <q-card-actions align="center">
                 <q-btn
                   push 
@@ -100,6 +120,7 @@
                   type="submit" 
                   icon="fas fa-user-check" 
                   :loading="disableRegistrationButton"
+                  :disable="disableButton"
                   style="width: 180px;">
                   <span class="q-pl-md">REGISTER</span>
                   <template v-slot:loading>
@@ -129,12 +150,18 @@
 </template>
 
 <script>
-export default {
+import { defineComponent } from 'vue'
+import vueRecaptcha from 'vue3-recaptcha2';
+export default defineComponent({
   name: 'Registration',
+  components: { vueRecaptcha },
   data () {
     return {
+      showRecaptcha: true,
       registrationStatus: false,
       disableRegistrationButton: null,
+      errorMessage: null,
+      disableButton: true,
       studentInformation: {
         studentNo: null,
         lastName: null,
@@ -153,8 +180,8 @@ export default {
     },
     async onSubmitRegistration () {
       this.disableRegistrationButton = true
+      this.disableButton = true
       var register = await this.$store.dispatch('students/registerStudent', this.studentInformation)
-      console.log(register)
       this.triggerSuccess()
     },
     triggerSuccess () {
@@ -172,9 +199,26 @@ export default {
           timeout: 1000
         })
         this.registrationStatus = true
+        this.disableButton = false
         this.disableRegistrationButton = false
       }, 3000)
-    }
+    },
+    recaptchaVerified(response) {
+      if (response !== '') {
+        this.disableButton = false
+        this.errorMessage = null
+        return { message: 'success' }
+      } else {
+        return { message: 'error' }
+      }
+    },
+    recaptchaExpired() {
+      this.$refs.vueRecaptcha.reset();
+    },
+    recaptchaFailed() {
+      console.log('hererefailed')
+      this.disableButton = true
+    },
   }
-}
+})
 </script>
