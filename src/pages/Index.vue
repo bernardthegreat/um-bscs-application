@@ -21,9 +21,19 @@
                 &nbsp;
               </div>
             </div>
-            <div class="col-lg-9 col-xs-12 col-sm-12 col-md-12 q-pa-md">
+            <div class="col-lg-9 col-xs-12 col-sm-12 col-md-12">
               <div class="text-h5 text-center text-weight-thin">
                 CURRENTLY BREWING - BERNARD T. GRESOLA
+              </div>
+            </div>
+            <div class="col-lg-2 col-xs-12">
+              <div class="flex flex-center">
+                &nbsp;
+              </div>
+            </div>
+            <div class="col-lg-9 col-xs-12 col-sm-12 col-md-12 q-pa-md">
+              <div class="text-h5 text-center text-weight-thin">
+                <q-btn push color="primary" :to="'/registration'" label="REGISTER HERE" icon="fas fa-user-edit"></q-btn>
               </div>
             </div>
           </div>
