@@ -3,8 +3,8 @@
     class="window-height row justify-center items-center"
   >
     <div class="column q-pa-lg" style="width:450px;height:511px;">
-      <div class="row">
-        <div class="col-sm-12 col-lg-12 col-md-12 col-xs-12">
+      <div class="row justify-center">
+        <div class="col-sm-12 col-lg-12 col-md-12 col-xs-9">
           <q-card square class="shadow-24" style="max-height:auto">
             <q-card-section class="bg-primary">
               <h4 class="text-h5 text-white q-my-md text-center text-overline text-uppercase">
@@ -94,8 +94,8 @@ export default defineComponent({
       showRecaptcha: true,
       loginLoading: null,
       loginForm: {
-        username: '1802989',
-        password: '09260181514'
+        username: null,
+        password: null
       },
       loginFormErrorMessage: null
     }

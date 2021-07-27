@@ -48,8 +48,8 @@ module.exports = configure(function (ctx) {
     build: {
       vueRouterMode: 'hash', // available values: 'hash', 'history'
       env: {
-        // API_URL: 'http://localhost:3000/',
-        API_URL: 'https://um-rest-api.vercel.app/',
+        API_URL: 'http://localhost:3000/',
+        // API_URL: 'https://um-rest-api.vercel.app/',
         API_KEY: '54inqmZQ2GUsjioM2tQmTMF1hXBv1zzw',
         LOCAL_API_URL: 'http://localhost:3000/',
         LOCAL_API_KEY: '54inqmZQ2GUsjioM2tQmTMF1hXBv1zzw',

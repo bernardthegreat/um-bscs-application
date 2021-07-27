@@ -17,7 +17,7 @@
       <q-dialog v-model="recitationDialog" persistent>
         <q-card style="width:450px;">
           <q-form
-            @keydown.enter.prevent="submitAnswer"
+            @submit="submitAnswer"
             ref="answerForm"
           >
             <q-card-section class="bg-primary">
@@ -54,18 +54,14 @@
 <script>
 import { defineComponent } from 'vue'
 import { mapGetters } from 'vuex'
-Pusher.logToConsole = true;
-
-var pusher = new Pusher(process.env.PUSHER_KEY, {
-  cluster: 'ap1'
-});
 export default defineComponent({
   name: 'StudentDashboard',
   data () {
     return {
       recitationDialog: null,
       recitationQuestion: null,
-      recitationAnswer: null
+      recitationAnswer: null,
+      items: []
     }
   },
   watch: {
@@ -83,15 +79,21 @@ export default defineComponent({
   },
   async mounted () {
     this.recitationDialog = false
-    var channel = pusher.subscribe('my-channel');
     
+    Pusher.logToConsole = true;
+    var pusher = new Pusher(process.env.PUSHER_KEY, {
+      cluster: 'ap1'
+    });
+    var channel = pusher.subscribe('my-channel');
+    var self = this
     channel.bind('my-event', async function(data) {
       if (data.message === 'recitation') {
-        this.$vm.data.recitationDialog = true
+        self.recitationDialog = true
       } else {
-        return null
+        self.recitationDialog = FALSE
       }
     });
+
   },
   methods: {
     submitAnswer () {

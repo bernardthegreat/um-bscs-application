@@ -1,13 +1,12 @@
 <template>
-  <div>
-    <q-card style="width:450px;">
+  <div style="width:250px;">
+    <q-card>
       <q-form
-        class="q-px-sm q-pt-sm q-pb-xs"
-        @keydown.enter.prevent="submitQuestion"
+        @submit="submitQuestion"
         ref="questionForm"
       >
         <q-card-section align="center" class="bg-primary text-white text-h5 text-weight-thin">
-          ASK A QUESTION
+          ASK QUESTION
         </q-card-section>
         <q-card-section>
           <q-input
@@ -19,7 +18,13 @@
           />
         </q-card-section>
         <q-card-actions align="center">
-          <q-btn label="Ask Question" type="submit" @click="submitQuestion" color="primary" push></q-btn>
+          <q-btn :loading="questionsLoading" icon="fa fa-question" color="primary" @click="submitQuestion">
+            <span class="q-pl-md">ASK QUESTION</span>
+            <template v-slot:loading>
+              <q-spinner-hourglass class="on-left" />
+              LOADING ...
+            </template>
+          </q-btn>
         </q-card-actions>
       </q-form>
     </q-card>
@@ -31,7 +36,8 @@ import { defineComponent } from 'vue';
 export default defineComponent({
   data () {
     return {
-      question: null
+      question: null,
+      questionsLoading: null
     }
   },
   methods: {
