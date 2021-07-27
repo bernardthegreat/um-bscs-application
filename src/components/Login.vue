@@ -7,8 +7,8 @@
         <div class="col-sm-12 col-lg-12 col-md-12 col-xs-12">
           <q-card square class="shadow-24" style="max-height:auto">
             <q-card-section class="bg-primary">
-              <h4 class="text-h5 text-white q-my-md text-center text-overline">
-                UM STUDENT APP - PROFESSOR
+              <h4 class="text-h5 text-white q-my-md text-center text-overline text-uppercase">
+                UM STUDENT APP - {{ this.role }}
               </h4>
             </q-card-section>
             <q-card-section>
@@ -49,7 +49,7 @@
                 </q-input>
               </q-form>
             </q-card-section>
-            <q-card-section align="center">
+            <!-- <q-card-section align="center">
               <vue-recaptcha v-if="showRecaptcha" siteKey="6LdATK8bAAAAAJ6IkKZE579Sd55FmzgqVj3MsG4d"
                 size="normal" 
                 theme="light"
@@ -59,13 +59,9 @@
                 @fail="recaptchaFailed"
                 ref="vueRecaptcha">
               </vue-recaptcha>
-            </q-card-section>
+            </q-card-section> -->
             <q-card-section class="q-py-md">
-              <div class="doc-note bg-negative q-dark text-center" v-if="formMessage != null">
-                <q-icon name="error"></q-icon>
-                {{this.formMessage}}
-              </div>
-              <div class="doc-note bg-negative q-dark text-center" v-if="loginFormErrorMessage.length > 0">
+              <div class="doc-note bg-negative q-dark text-center" v-if="loginFormErrorMessage !== null">
                 <q-icon name="error"></q-icon>
                 {{this.loginFormErrorMessage}}
               </div>
@@ -89,24 +85,44 @@
 <script>
 
 import { defineComponent } from 'vue'
-import vueRecaptcha from 'vue3-recaptcha2';
+// import vueRecaptcha from 'vue3-recaptcha2'
 export default defineComponent({
+  // components: { vueRecaptcha },
+  props: ['role'],
   data () {
     return {
       showRecaptcha: true,
       loginLoading: null,
       loginForm: {
-        username: null,
-        password: null,
-        module: null
+        username: '1802989',
+        password: '09260181514'
       },
-      loginFormErrorMessage: []
+      loginFormErrorMessage: null
     }
   },
-  components: { vueRecaptcha },
   methods: {
-    login () {
-      
+    async login () {
+      this.loginLoading = true
+      try {
+        if (this.role === 'professor') {
+          const professorLogin = await this.$store.dispatch('professors/loginUser', this.loginForm)
+          if (professorLogin.success === null) {
+            this.loginFormErrorMessage = professorLogin.error
+          } else {
+            this.loginFormErrorMessage = null
+          }
+        } if (this.role === 'student') {
+          const studentLogin = await this.$store.dispatch('students/students', this.loginForm)
+          if (studentLogin.success === null) {
+            this.loginFormErrorMessage = studentLogin.error
+          } else {
+            this.loginFormErrorMessage = null
+          }
+        }
+      } catch (error) {
+        console.log(error)
+      }
+      this.loginLoading = false
     },
     recaptchaVerified(response) {
       if (response !== '') {

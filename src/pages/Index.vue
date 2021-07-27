@@ -1,52 +1,94 @@
 <template>
   <q-page
-    class="window-height row justify-center items-center"
+    class="row justify-center"
   >
-    <div class="q-ma-xs">
-      <q-card>
-        <q-card-section>
-          <div class="row justify-center items-center">
-            <div class="col-lg-2 col-xs-12">
-              <div class="text-center">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c8/Seal_of_the_University_of_Manila.jpeg" style="height:200px;">
-              </div>
+    <div class="col-lg-6 col-sm-12 col-md-12 col-xs-12 q-ma-lg">
+      <q-card square class="shadow-24">
+        <q-card-section class="bg-primary text-white">
+          <div class="row justify-between">
+            <div class="text-h5 text-weight-thin">
+              ANNOUNCEMENTS
             </div>
-            <div class="col-lg-9 col-xs-12 col-sm-12 col-md-12 q-pa-md">
-              <div class="text-h2 text-center text-weight-thin">
-                UM BSCS STUDENT APPLICATION
-              </div>
-            </div>
-            <div class="col-lg-2 col-xs-12">
-              <div class="flex flex-center">
-                &nbsp;
-              </div>
-            </div>
-            <div class="col-lg-9 col-xs-12 col-sm-12 col-md-12">
-              <div class="text-h5 text-center text-weight-thin">
-                CURRENTLY BREWING - BERNARD T. GRESOLA
-              </div>
-            </div>
-            <div class="col-lg-2 col-xs-12">
-              <div class="flex flex-center">
-                &nbsp;
-              </div>
-            </div>
-            <div class="col-lg-9 col-xs-12 col-sm-12 col-md-12 q-pa-md">
-              <div class="text-h5 text-center text-weight-thin">
-                <q-btn push color="primary" :to="'/registration'" label="REGISTER HERE" icon="fas fa-user-edit"></q-btn>
-              </div>
+            <div>
+              <q-btn color="secondary" :to="'/registration'" icon="fa fa-user-edit" label="Register Here"></q-btn>
             </div>
           </div>
         </q-card-section>
+        <q-card-section v-if="!announcementLoading">
+          <q-expansion-item
+            expand-separator
+            icon="fa fa-thumbtack"
+            label="PINNED ANNOUNCEMENTS"
+            group="somegroup"
+            default-opened
+            header-class="bg-secondary text-white"
+            class="shadow-11 q-ma-md"
+            expand-icon-class="text-white"
+            v-if="this.pinnedAnnouncements.length > 0"
+          >
+            <pinned-announcements :pinnedAnnouncements="pinnedAnnouncements"></pinned-announcements>
+          </q-expansion-item>
+          
+          <q-expansion-item
+            expand-separator
+            icon="fa fa-bullhorn"
+            label="OTHER ANNOUNCEMENTS"
+            group="othergroups"
+            default-opened
+            header-class="bg-secondary text-white"
+            class="shadow-11 q-ma-md"
+            expand-icon-class="text-white"
+            v-if="this.otherAnnouncements.length > 0"
+          >
+            <other-announcements :otherAnnouncements="otherAnnouncements"></other-announcements>
+          </q-expansion-item>
+        </q-card-section>
+        <q-card-section align="center" v-if="announcementLoading">
+          <div class="text-h5 text-weight-thin">
+            LOADING ANNOUNCEMENTS
+          </div>
+        </q-card-section>
+        <q-inner-loading :showing="this.announcementLoading">
+          <q-spinner-gears size="50px" color="primary" />
+        </q-inner-loading>
       </q-card>
     </div>
   </q-page>
 </template>
-
 <script>
+import OtherAnnouncements from 'src/components/Announcements/OtherAnnouncements.vue';
+import PinnedAnnouncements from 'src/components/Announcements/PinnedAnnouncements.vue';
 import { defineComponent } from 'vue';
+import { mapGetters } from 'vuex'
 
 export default defineComponent({
-  name: 'PageIndex'
+  components: { PinnedAnnouncements, OtherAnnouncements },
+  name: 'PageIndex',
+  data () {
+    return {
+      announcementLoading: null,
+      messages: null
+    }
+  },
+  mounted () {
+    this.getAnnouncements()
+    var channel = pusher.subscribe('my-channel')
+    channel.bind('my-event', function(data) {
+      this.messages = JSON.stringify(data)
+    });
+  },
+  computed: {
+    ...mapGetters({
+      pinnedAnnouncements: 'announcements/pinnedAnnouncements',
+      otherAnnouncements: 'announcements/otherAnnouncements'
+    })
+  },
+  methods: {
+    async getAnnouncements () {
+      this.announcementLoading = true
+      await this.$store.dispatch('announcements/getAnnouncements')
+      this.announcementLoading = false
+    }
+  }
 })
 </script>

@@ -16,10 +16,18 @@ const routes = [
   },
 
   {
-    path: '/professor',
-    component: () => import('layouts/LoginLayout.vue'),
+    path: '/professors',
+    component: () => import('layouts/AppLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/Professor.vue') }
+      { path: '', name: 'Professors', component: () => import('src/pages/Professors.vue') }
+    ]
+  },
+
+  {
+    path: '/students',
+    component: () => import('layouts/AppLayout.vue'),
+    children: [
+      { path: '', name: 'Students', component: () => import('src/pages/Students.vue') }
     ]
   },
 
