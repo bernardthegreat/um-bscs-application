@@ -42,14 +42,39 @@ export default defineComponent({
   },
   methods: {
     async submitQuestion () {
+      this.questionsLoading = true
       const questionRequest = {
         name: 'Recitation',
         content: this.question,
         active: '1',
         type: 2
       }
-      await this.$store.dispatch('professors/askQuestion', questionRequest)
-    }
+      const question = await this.$store.dispatch('professors/askQuestion', questionRequest)
+      if (question.message !== null) {
+        this.triggerSucccess()
+        this.$emit('closeDialog', false)
+      }
+      
+    },
+    triggerSucccess () {
+      // we need to get the notification reference
+      // otherwise it will never get dismissed ('ongoing' type has timeout 0)
+      const notif = this.$q.notify({
+        type: 'ongoing',
+        message: 'Processing question...'
+      })
+
+      // simulate delay
+      setTimeout(() => {
+        notif({
+          type: 'positive',
+          message: 'Question successfully sent to the Students',
+          timeout: 1000
+        })
+        this.questionsLoading = false
+        this.question = null
+      }, 3000)
+    },
   }
 })
 </script>

@@ -79,11 +79,11 @@
         </q-card-section>
       </q-card>
       
-      <q-dialog v-model="question">
+      <q-dialog v-model="questionDialog">
         <div class="column">
           <div class="row">
             <div class="col-sm-12 col-lg-12 col-md-12 col-xs-12">
-              <questions-dialog></questions-dialog>
+              <questions-dialog @closeDialog="questionDialog = false"></questions-dialog>
             </div>
           </div>
         </div>
@@ -117,7 +117,7 @@ export default defineComponent({
         { name: 'contact_number', label: 'Contact #', field: 'contact_number', align: 'left', sortable: true },
         { name: 'answer', label: 'Recitation', field: 'answer', align: 'left', sortable: true }
       ],
-      question: null
+      questionDialog: null
     }
   },
   computed: {
@@ -136,7 +136,7 @@ export default defineComponent({
       this.loading = false
     },
     askQuestion () {
-      this.question = true
+      this.questionDialog = true
     }
   }
 })

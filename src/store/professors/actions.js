@@ -41,4 +41,5 @@ export async function askQuestion (state, questionRequest) {
       body: JSON.stringify(questionRequest)
     }
   ).then((response) => response.json())
+  return response
 }
