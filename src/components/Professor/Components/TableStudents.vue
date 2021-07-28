@@ -16,11 +16,19 @@
       :title="this.tableTitle"
     >
       <template v-slot:top-right>
-        <q-input dense debounce="300" v-model="filter" placeholder="Search">
-          <template v-slot:append>
-            <q-icon name="search" />
-          </template>
-        </q-input>
+        <div class="row q-gutter-md">
+          <q-btn
+            color="primary"
+            icon-right="fa fa-download"
+            no-caps
+            @click="exportTable"
+          />
+          <q-input dense debounce="300" v-model="filter" placeholder="Search">
+            <template v-slot:append>
+              <q-icon name="search" />
+            </template>
+          </q-input>
+        </div>
       </template>
       <template v-slot:loading>
         <q-inner-loading showing color="primary" />
@@ -174,109 +182,6 @@
                 </q-card-section>
               </q-card>
             </q-expansion-item>
-            <!-- <q-expansion-item
-              expand-separator
-              icon="fas fa-user"
-              label="BACK OF VACCINE CARD"
-              group="othergroup"
-              class="q-ma-md bg-primary text-white shadow-11"
-              dark
-            >
-              <q-card>
-                <q-card-section>
-                  <q-input
-                    outlined
-                    square
-                    type="text"
-                    hint=""
-                    color="primary"
-                    v-model="vaccineCardInformation.firstDoseDate"
-                    label="First Dose Date"
-                    autocomplete="off"
-                  />
-                  <q-input
-                    outlined
-                    square
-                    type="text"
-                    hint=""
-                    color="primary"
-                    v-model="vaccineCardInformation.secondDoseDate"
-                    label="Second Dose Date"
-                    autocomplete="off"
-                  />
-                  <q-input
-                    outlined
-                    square
-                    type="text"
-                    hint=""
-                    color="primary"
-                    v-model="vaccineCardInformation.manufacturer"
-                    label="Vaccine Manufacturer"
-                    autocomplete="off"
-                  />
-                  <q-input
-                    outlined
-                    square
-                    type="text"
-                    hint=""
-                    color="primary"
-                    v-model="vaccineCardInformation.batchNo"
-                    label="1st Dose Batch No."
-                    autocomplete="off"
-                  />
-                  <q-input
-                    outlined
-                    square
-                    type="text"
-                    hint=""
-                    color="primary"
-                    v-model="vaccineCardInformation.lotNo"
-                    label="1st Dose Lot No."
-                    autocomplete="off"
-                  />
-                  <q-input
-                    outlined
-                    square
-                    type="text"
-                    hint=""
-                    color="primary"
-                    v-model="vaccineCardInformation.secondDoseBatchNo"
-                    label="2nd Dose Batch No."
-                    autocomplete="off"
-                  />
-                  <q-input
-                    outlined
-                    square
-                    type="text"
-                    hint=""
-                    color="primary"
-                    v-model="vaccineCardInformation.secondDoseLotNo"
-                    label="2nd Dose Lot No."
-                    autocomplete="off"
-                  />
-                  <q-input
-                    outlined
-                    square
-                    type="text"
-                    hint=""
-                    color="primary"
-                    v-model="vaccineCardInformation.firstDoseVaccinator"
-                    label="First Dose Vaccinator"
-                    autocomplete="off"
-                  />
-                  <q-input
-                    outlined
-                    square
-                    type="text"
-                    hint=""
-                    color="primary"
-                    v-model="vaccineCardInformation.secondDoseVaccinator"
-                    label="Second Dose Vaccinator"
-                    autocomplete="off"
-                  />
-                </q-card-section>
-              </q-card>
-            </q-expansion-item> -->
           </div>
         </q-card-section>
         <!-- <q-card-section align="center" v-if="this.cardLoading" class="text-h5 text-weight-thin q-mt-xl q-pt-xl">
@@ -313,7 +218,26 @@
 
 <script>
 import { defineComponent } from 'vue';
+import { exportFile, useQuasar } from 'quasar'
+function wrapCsvValue (val, formatFn) {
+  let formatted = formatFn !== void 0
+    ? formatFn(val)
+    : val
 
+  formatted = formatted === void 0 || formatted === null
+    ? ''
+    : String(formatted)
+
+  formatted = formatted.split('"').join('""')
+  /**
+   * Excel accepts \n and \r in strings, but some other CSV parsers do not
+   * Uncomment the next two lines to escape new lines
+   */
+  // .split('\n').join('\\n')
+  // .split('\r').join('\\r')
+
+  return `"${formatted}"`
+}
 export default defineComponent({
   props: ['loading', 'studentDetails', 'tableTitle', 'columns'],
   name: 'TableProfessorStudents',
@@ -367,6 +291,32 @@ export default defineComponent({
     },
     updateStudent () {
       console.log('herererere')
+    },
+    exportTable () {
+      console.log(this.columns, 'columns')
+      // naive encoding to csv format
+      const content = [this.columns.map(col => wrapCsvValue(col.label))].concat(
+        this.studentDetails.map(row => this.columns.map(col => wrapCsvValue(
+          typeof col.field === 'function'
+            ? col.field(row)
+            : row[ col.field === void 0 ? col.name : col.field ],
+          col.format
+        )).join(','))
+      ).join('\r\n')
+
+      const status = exportFile(
+        'Students.csv',
+        content,
+        'text/csv'
+      )
+
+      if (status !== true) {
+        $q.notify({
+          message: 'Browser denied file download...',
+          color: 'negative',
+          icon: 'warning'
+        })
+      }
     }
   }
 })

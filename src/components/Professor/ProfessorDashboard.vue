@@ -98,6 +98,7 @@ import { defineComponent } from 'vue'
 import { mapGetters } from 'vuex'
 import TableStudents from './Components/TableStudents.vue'
 import QuestionsDialog from './Components/QuestionsDialog.vue'
+
 export default defineComponent({
   components: { TableStudents, QuestionsDialog },
   name: 'ProfessorDashboard',

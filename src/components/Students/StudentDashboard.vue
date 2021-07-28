@@ -9,6 +9,9 @@
                 <div class="text-h5 text-white text-weight-thin">
                   UM BSCS STUDENT APPLICATION STUDENT DASHBOARD
                 </div>
+                <!-- <div>
+                  <q-btn color="secondary" @click="openDialog" icon="fa fa-hand-sparkles"></q-btn>
+                </div> -->
               </div>
             </q-card-section>
           </q-card>
@@ -44,6 +47,9 @@
               <q-btn type="submit" @click="submitAnswer" label="Submit Answer" color="primary" push icon="fa fa-reply">
               </q-btn>
             </q-card-actions>
+            <q-inner-loading :showing="this.cardLoading">
+              <q-spinner-gears size="50px" color="primary" />
+            </q-inner-loading>
           </q-form>
         </q-card>
       </q-dialog>
@@ -61,14 +67,17 @@ export default defineComponent({
       recitationDialog: null,
       recitationQuestion: null,
       recitationAnswer: null,
-      items: []
+      items: [],
+      cardLoading: null
     }
   },
   watch: {
     async recitationDialog (val) {
       if (val) {
+        this.cardLoading = true
         await this.$store.dispatch('announcements/getAnnouncements')
         this.recitationQuestion = this.question[0].content
+        this.cardLoading = false
       }
     }
   },
@@ -77,7 +86,7 @@ export default defineComponent({
       question: 'announcements/question'
     })
   },
-  async mounted () {
+  async created () {
     this.recitationDialog = false
     
     Pusher.logToConsole = true;
@@ -88,9 +97,10 @@ export default defineComponent({
     var self = this
     channel.bind('my-event', async function(data) {
       if (data.message === 'recitation') {
+        self.recitationAnswer = null
         self.recitationDialog = true
       } else {
-        self.recitationDialog = FALSE
+        self.recitationDialog = false
       }
     });
 
@@ -98,6 +108,9 @@ export default defineComponent({
   methods: {
     submitAnswer () {
       this.recitationDialog = false
+    },
+    openDialog () {
+      this.recitationDialog = true
     }
   }
 })

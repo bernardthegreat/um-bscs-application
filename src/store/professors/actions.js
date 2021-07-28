@@ -43,3 +43,14 @@ export async function askQuestion (state, questionRequest) {
   ).then((response) => response.json())
   return response
 }
+
+export async function sendMessageRequest (state) {
+  const response = await fetch(
+    `${this.state.students.apiUrl}announcements/set-recitation`,
+    {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    }
+  ).then((response) => response.json())
+  return response
+}

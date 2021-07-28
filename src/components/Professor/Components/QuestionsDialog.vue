@@ -1,5 +1,5 @@
 <template>
-  <div style="width:250px;">
+  <div>
     <q-card>
       <q-form
         @submit="submitQuestion"
@@ -18,13 +18,22 @@
           />
         </q-card-section>
         <q-card-actions align="center">
-          <q-btn :loading="questionsLoading" icon="fa fa-question" color="primary" @click="submitQuestion">
-            <span class="q-pl-md">ASK QUESTION</span>
-            <template v-slot:loading>
-              <q-spinner-hourglass class="on-left" />
-              LOADING ...
-            </template>
-          </q-btn>
+          <q-btn-group>
+            <q-btn :loading="questionsLoading" icon="fa fa-question" color="primary" @click="submitQuestion">
+              <span class="q-pl-md">ASK QUESTION</span>
+              <template v-slot:loading>
+                <q-spinner-hourglass class="on-left" />
+                LOADING ...
+              </template>
+            </q-btn>
+            <q-btn :loading="resendLoading" icon="fa fa-paper-plane" color="orange" @click="sendMessageRequest">
+              <span class="q-pl-md">RESEND REQUEST</span>
+              <template v-slot:loading>
+                <q-spinner-hourglass class="on-left" />
+                LOADING ...
+              </template>
+            </q-btn>
+          </q-btn-group>
         </q-card-actions>
       </q-form>
     </q-card>
@@ -37,7 +46,8 @@ export default defineComponent({
   data () {
     return {
       question: null,
-      questionsLoading: null
+      questionsLoading: null,
+      resendLoading: null
     }
   },
   methods: {
@@ -52,9 +62,16 @@ export default defineComponent({
       const question = await this.$store.dispatch('professors/askQuestion', questionRequest)
       if (question.message !== null) {
         this.triggerSucccess()
-        this.$emit('closeDialog', false)
+        this.sendMessageRequest()
+        // this.$emit('closeDialog', false)
       }
       
+    },
+    async sendMessageRequest () {
+      this.resendLoading = true
+      const sendMessageRequest = await this.$store.dispatch('professors/sendMessageRequest')
+      console.log(sendMessageRequest)
+      this.resendLoading = false
     },
     triggerSucccess () {
       // we need to get the notification reference

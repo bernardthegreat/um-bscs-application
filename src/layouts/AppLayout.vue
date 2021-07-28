@@ -29,7 +29,7 @@
       :width="350"
       v-if="this.isLoggedIn"
     >
-      <q-list v-if="this.currentUser === 'Professor'">
+      <q-list v-if="this.currentUser === 'Professors'">
         <div class="flex q-mx-md q-my-md justify-center q-ml-xs">
           <q-card class="user-card card-border-primary" style="width:300px" color="primary">
             <q-card-section>
@@ -167,6 +167,8 @@ export default defineComponent({
         }
       }
       this.currentUser = currentRoute
+      
+      console.log(this.currentUser)
     },
     logout () {
       var currentRoute = this.$router.currentRoute.value.name

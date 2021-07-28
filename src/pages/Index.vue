@@ -72,10 +72,10 @@ export default defineComponent({
   },
   mounted () {
     this.getAnnouncements()
-    var channel = pusher.subscribe('my-channel')
-    channel.bind('my-event', function(data) {
-      this.messages = JSON.stringify(data)
-    });
+    // var channel = pusher.subscribe('my-channel')
+    // channel.bind('my-event', function(data) {
+    //   this.messages = JSON.stringify(data)
+    // });
   },
   computed: {
     ...mapGetters({
