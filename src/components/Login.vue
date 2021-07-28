@@ -62,8 +62,12 @@
             </q-card-section> -->
             <q-card-section class="q-py-md">
               <div class="doc-note bg-negative q-dark text-center" v-if="loginFormErrorMessage !== null">
-                <q-icon name="error"></q-icon>
-                {{this.loginFormErrorMessage}}
+                <q-banner rounded class="bg-negative text-white">
+                  <template v-slot:avatar>
+                    <q-icon name="fa fa-user-slash" color="white" />
+                  </template>
+                  {{ loginFormErrorMessage }}
+                </q-banner>
               </div>
             </q-card-section>
             <q-card-section class="bg-primary">

@@ -65,7 +65,7 @@
           <div class="row justify-between">
             <div class="text-left text-h5 text-white text-weight-thin">
               <q-icon name="fas fa-hospital-user" class="q-pr-md"></q-icon>
-              {{ this.studentDetails[0].fullName }}
+              {{ this.studentInformation.fullName }}
             </div>
             <q-btn dense color="white" flat icon="close" @click="closeDialog" v-close-popup>
               <q-tooltip content-class="bg-white text-primary">CLOSE</q-tooltip>
@@ -125,6 +125,17 @@
                     v-model="studentInformation.middleName"
                     label="Middle Name"
                     autocomplete="off"
+                  />
+                  <q-input
+                    outlined
+                    square
+                    type="text"
+                    label="Email Address"
+                    hint=""
+                    color="primary"
+                    autocomplete="off"
+                    v-model="studentInformation.emailAddress"
+                    :rules="[ val => val && val.length > 0 || 'Please enter your Email', isValidEmail]"
                   />
                   <q-input
                     outlined
@@ -192,22 +203,32 @@
         </q-inner-loading> -->
         <q-card-actions align="center">
           <q-btn-group>
-            <q-btn
-              type="button"
-              color="green"
-              v-if="tableTitle === 'Floating Students'"
-              @click="approveStudent"
-              class="q-pa-sm"
+            <q-btn 
+              :loading="approveLoading"
               icon="fas fa-user-check"
-              label="Approve">
-            </q-btn>
-            <q-btn
+              color="green"
+              @click="approveStudent"
+              v-if="tableTitle === 'Floating Students'"
               type="button"
+            >
+              <span class="q-pl-md">APPROVE</span>
+              <template v-slot:loading>
+                <q-spinner-hourglass class="on-left" />
+                LOADING ...
+              </template>
+            </q-btn>
+            <q-btn 
+              :loading="updateLoading"
+              icon="fas fa-user-edit"
               color="orange"
               @click="updateStudent"
-              class="q-pa-sm"
-              icon="fas fa-user-edit"
-              label="Update">
+              type="button"
+            >
+              <span class="q-pl-md">UPDATE</span>
+              <template v-slot:loading>
+                <q-spinner-hourglass class="on-left" />
+                LOADING ...
+              </template>
             </q-btn>
           </q-btn-group>
         </q-card-actions>
@@ -257,9 +278,12 @@ export default defineComponent({
         emailAddress: null,
         fbLink: null,
         hashKey: null,
-        birthdate: null
+        birthdate: null,
+        fullName: null
       },
-      studentDialog: null
+      studentDialog: null,
+      approveLoading: null,
+      updateLoading: null
     }
   },
   watch: {
@@ -271,29 +295,54 @@ export default defineComponent({
         this.studentInformation.middleName = val[0].middle_name
         this.studentInformation.lastName = val[0].last_name
         this.studentInformation.contactNumber = val[0].contact_number
-        this.studentInformation.emailAddress = val[0].emailAddress
+        this.studentInformation.emailAddress = val[0].email_address
         this.studentInformation.fbLink = val[0].fb_link
         this.studentInformation.hashKey = val[0].hash_key
         this.studentInformation.birthdate = val[0].birthdate
+        this.studentInformation.fullName = val[0].fullName
       }
     }
-  },
-  mounted () {
-    console.log(this.studentDetails, 'details')
   },
   methods: {
     closeDialog () {
       this.studentDialog = false
       this.selected = []
     },
-    approveStudent () {
-      console.log('here')
+    isValidEmail (val) {
+      const emailPattern = /^(?=[a-zA-Z0-9@._%+-]{6,254}$)[a-zA-Z0-9._%+-]{1,64}@(?:[a-zA-Z0-9-]{1,63}\.){1,8}[a-zA-Z]{2,63}$/
+      return emailPattern.test(val) || 'Invalid email'
+    },
+    async approveStudent () {
+      this.approveLoading = true
+      const approvalStudent = await this.$store.dispatch('professors/approveStudent', this.studentInformation)
+      if (approvalStudent.message !== null) {
+        this.triggerSucccess()
+      }
     },
     updateStudent () {
       console.log('herererere')
     },
+    triggerSucccess () {
+      // we need to get the notification reference
+      // otherwise it will never get dismissed ('ongoing' type has timeout 0)
+      const notif = this.$q.notify({
+        type: 'ongoing',
+        message: 'Processing approval of student...'
+      })
+
+      // simulate delay
+      setTimeout(() => {
+        notif({
+          type: 'positive',
+          message: 'Student successfully verified!',
+          timeout: 1000
+        })
+        this.approveLoading = false
+        this.closeDialog()
+        this.$emit('getStudents')
+      }, 3000)
+    },
     exportTable () {
-      console.log(this.columns, 'columns')
       // naive encoding to csv format
       const content = [this.columns.map(col => wrapCsvValue(col.label))].concat(
         this.studentDetails.map(row => this.columns.map(col => wrapCsvValue(

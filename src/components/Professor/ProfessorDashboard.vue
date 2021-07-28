@@ -72,7 +72,7 @@
                 <table-students :loading="this.loading" :columns="this.columns" :studentDetails="registeredStudents" :tableTitle="'Registered Students'"></table-students>
               </q-tab-panel>
               <q-tab-panel name="floating">
-                <table-students :loading="this.loading" :columns="this.columns" :studentDetails="floatingStudents" :tableTitle="'Floating Students'"></table-students>
+                <table-students @getStudents="getStudents" :loading="this.loading" :columns="this.columns" :studentDetails="floatingStudents" :tableTitle="'Floating Students'"></table-students>
               </q-tab-panel>
             </q-tab-panels>
           </q-card>
@@ -132,6 +132,7 @@ export default defineComponent({
   },
   methods: {
     async getStudents () {
+      console.log('herererere')
       this.loading = true
       await this.$store.dispatch('students/students')
       this.loading = false

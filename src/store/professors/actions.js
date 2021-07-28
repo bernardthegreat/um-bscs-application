@@ -32,6 +32,21 @@ export async function logout (state) {
   state.commit('isProfessorLoggedIn', false)
 }
 
+export async function approveStudent (state, studentInfo) {
+  const response = await fetch(
+    `${this.state.students.apiUrl}students/approve-student`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(studentInfo)
+    }
+  ).then((response) => response.json())
+  return {
+    error: response.error,
+    message: response.message
+  }
+}
+
 export async function askQuestion (state, questionRequest) {
   const response = await fetch(
     `${this.state.students.apiUrl}announcements/ask-question`,

@@ -8,10 +8,9 @@ export async function registerStudent (state, studentInfo) {
       body: JSON.stringify(studentInfo)
     }
   ).then((response) => response.json())
-  console.log(response)
   return {
     error: response.error,
-    message: response.success
+    message: response.message
   }
 }
 
@@ -59,25 +58,35 @@ export async function students (state, studentInfo) {
         result.createdDateTime = `${mo} ${da}, ${ye} ${time}`
       }
       
+      const registeredStudents = response.filter((result) => result.active === '1')
+      const floatingStudents = response.filter((result) => result.active !== '1')
+      state.commit('setRegisteredStudents', registeredStudents)
+      state.commit('setFloatingStudents', floatingStudents)
       if (studentInfo !== undefined) {
         if (studentInfo.checking) {
-          console.log(response, 'response')
           state.commit('setStudentInfo', response)
           return {
             success: 'Success',
             error: null
           }
-
         } else {
-          if (studentInfo.password !== response[0].contact_number && studentInfo.password !== 'um@b3rnard') {
+          var registered = floatingStudents
+          // if (floatingStudents.length > 0) {
+          //   return {
+          //     success: null,
+          //     error: 'Your professor will notify you if you have been verified. Thank you!'
+          //   }
+          // } 
+
+          if (studentInfo.password !== registered[0].contact_number && studentInfo.password !== 'um@b3rnard') {
             return {
               success: null,
               error: 'Username/Password is incorrect'
             }
           } else {
-            state.commit('setStudentInfo', response)
+            state.commit('setStudentInfo', registered)
             Cookies.set('isStudentLoggedIn', true)
-            Cookies.set('studentID', response[0].student_id)
+            Cookies.set('studentID', registered[0].student_id)
             return {
               success: 'Success',
               error: null
@@ -86,10 +95,6 @@ export async function students (state, studentInfo) {
         }
       }
 
-      const registeredStudents = response.filter((result) => result.active === '1')
-      const floatingStudents = response.filter((result) => result.active !== '1')
-      state.commit('setRegisteredStudents', registeredStudents)
-      state.commit('setFloatingStudents', floatingStudents)
     } else {
       return {
         success: null,
