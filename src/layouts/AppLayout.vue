@@ -31,7 +31,7 @@
     >
       <q-list v-if="this.currentUser === 'Professors'">
         <div class="flex q-mx-md q-my-md justify-center q-ml-xs">
-          <q-card class="user-card card-border-primary" style="width:300px" color="primary">
+          <q-card square class="user-card card-border-primary" style="width:300px" color="primary">
             <q-card-section>
               <div class="text-overline text-center text-weight-bold">BERNARD TIAGA GRESOLA</div>
               <div class="text-center">
@@ -67,7 +67,7 @@
 
       <q-list v-else>
         <div class="flex q-mx-md q-my-md justify-center q-ml-xs">
-          <q-card class="user-card card-border-primary" style="width:300px" color="primary">
+          <q-card square class="user-card card-border-primary" style="width:300px" color="primary">
             <q-card-section>
               <div class="text-overline text-center text-weight-bold">
                 {{ studentInformation.fullName }}
@@ -78,6 +78,9 @@
                 </q-chip>
               </div>
             </q-card-section>
+            <q-inner-loading :showing="this.studentLoading">
+              <q-spinner-cube size="50px" color="primary" />
+            </q-inner-loading>
             <q-separator></q-separator>
             <q-list>
               <q-item clickable v-ripple to="/students">
@@ -85,6 +88,12 @@
                   <q-icon color="primary" name="fas fa-user-graduate" />
                 </q-item-section>
                 <q-item-section>DASHBOARD</q-item-section>
+              </q-item>
+              <q-item clickable v-ripple to="/students/attendance">
+                <q-item-section avatar>
+                  <q-icon color="primary" name="fas fa-user-clock" />
+                </q-item-section>
+                <q-item-section>ATTENDANCE</q-item-section>
               </q-item>
             </q-list>
           </q-card>
@@ -118,7 +127,8 @@ export default defineComponent({
         emailAddress: null,
         contactNumber: null,
         fbLink: null
-      }
+      },
+      studentLoading: null
     }
   },
   mounted () {
@@ -136,15 +146,20 @@ export default defineComponent({
     },
     studentInfo (val) {
       if (val.length > 0) {
+        console.log('herrerereer')
+        this.studentLoading = true
         this.isLoggedIn = true
-        this.studentInformation.studentNo = val[0].student_id,
-        this.studentInformation.firstName = val[0].first_name,
-        this.studentInformation.middleName = val[0].middle_name,
-        this.studentInformation.lastName = val[0].last_name,
-        this.studentInformation.fullName = val[0].fullName,
-        this.studentInformation.emailAddress = val[0].email_address,
-        this.studentInformation.contactNumber = val[0].contact_number,
-        this.studentInformation.fbLink = val[0].fb_link
+        setTimeout(async () => {
+          this.studentInformation.studentNo = val[0].student_id,
+          this.studentInformation.firstName = val[0].first_name,
+          this.studentInformation.middleName = val[0].middle_name,
+          this.studentInformation.lastName = val[0].last_name,
+          this.studentInformation.fullName = val[0].fullName,
+          this.studentInformation.emailAddress = val[0].email_address,
+          this.studentInformation.contactNumber = val[0].contact_number,
+          this.studentInformation.fbLink = val[0].fb_link
+          this.studentLoading = false
+        }, 2000)
       }
     }
   },

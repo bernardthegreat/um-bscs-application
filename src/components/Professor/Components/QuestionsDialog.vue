@@ -19,15 +19,22 @@
         </q-card-section>
         <q-card-actions align="center">
           <q-btn-group>
-            <q-btn :loading="questionsLoading" icon="fa fa-question" color="primary" @click="submitQuestion">
+            <q-btn push :loading="questionsLoading" icon="fa fa-question" color="primary" @click="submitQuestion">
               <span class="q-pl-md">ASK QUESTION</span>
               <template v-slot:loading>
                 <q-spinner-hourglass class="on-left" />
                 LOADING ...
               </template>
             </q-btn>
-            <q-btn :loading="resendLoading" icon="fa fa-paper-plane" color="orange" @click="sendMessageRequest">
-              <span class="q-pl-md">RESEND REQUEST</span>
+            <q-btn push :loading="resendLoading" icon="fa fa-paper-plane" color="orange" @click="sendMessageRequest">
+              <span class="q-pl-md">RESEND QUESTION</span>
+              <template v-slot:loading>
+                <q-spinner-hourglass class="on-left" />
+                LOADING ...
+              </template>
+            </q-btn>
+            <q-btn push :loading="removeLoading" icon="fa fa-times" color="red" @click="removeMessage">
+              <span class="q-pl-md">REMOVE QUESTION</span>
               <template v-slot:loading>
                 <q-spinner-hourglass class="on-left" />
                 LOADING ...
@@ -47,31 +54,41 @@ export default defineComponent({
     return {
       question: null,
       questionsLoading: null,
-      resendLoading: null
+      resendLoading: null,
+      removeLoading: null
     }
   },
   methods: {
     async submitQuestion () {
-      this.questionsLoading = true
-      const questionRequest = {
-        name: 'Recitation',
-        content: this.question,
-        active: '1',
-        type: 2
-      }
-      const question = await this.$store.dispatch('professors/askQuestion', questionRequest)
-      if (question.message !== null) {
-        this.triggerSucccess()
-        this.sendMessageRequest()
-        // this.$emit('closeDialog', false)
-      }
-      
+      this.$refs.questionForm.validate().then(async valid => {
+        if (!valid) {
+          this.formHasError = true
+        } else {
+          this.questionsLoading = true
+          const questionRequest = {
+            name: 'Recitation',
+            content: this.question,
+            active: '1',
+            type: 2
+          }
+          const question = await this.$store.dispatch('professors/askQuestion', questionRequest)
+          if (question.message !== null) {
+            this.triggerSucccess()
+            this.sendMessageRequest()
+            // this.$emit('closeDialog', false)
+          }
+        }
+      })
     },
     async sendMessageRequest () {
       this.resendLoading = true
-      const sendMessageRequest = await this.$store.dispatch('professors/sendMessageRequest')
-      console.log(sendMessageRequest)
+      await this.$store.dispatch('professors/sendMessageRequest')
       this.resendLoading = false
+    },
+    async removeMessage () {
+      this.removeLoading = true
+      await this.$store.dispatch('professors/removeQuestionMessage')
+      this.removeLoading = false
     },
     triggerSucccess () {
       // we need to get the notification reference

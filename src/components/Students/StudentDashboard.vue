@@ -1,21 +1,147 @@
 <template>
   <div class="col-lg-12 col-md-12 col-xs-12 q-pa-lg">
     <div>
-      <q-card class="card-border-primary">
-        <q-card-section>
-          <q-card>
-            <q-card-section class=" bg-primary">
-              <div class="row justify-between">
-                <div class="text-h5 text-white text-weight-thin">
-                  UM BSCS STUDENT APPLICATION STUDENT DASHBOARD
-                </div>
-                <!-- <div>
-                  <q-btn color="secondary" @click="openDialog" icon="fa fa-hand-sparkles"></q-btn>
-                </div> -->
-              </div>
-            </q-card-section>
-          </q-card>
+      <q-card square class="card-border-primary">
+        <q-card-section class=" bg-primary">
+          <div class="row justify-between">
+            <div class="text-h5 text-white text-weight-thin">
+              UM BSCS STUDENT APPLICATION STUDENT DASHBOARD
+            </div>
+            <!-- <div>
+              <q-btn color="secondary" @click="openDialog" icon="fa fa-hand-sparkles"></q-btn>
+            </div> -->
+          </div>
         </q-card-section>
+        <q-card-section>
+          <q-expansion-item
+            expand-separator
+            icon="fa fa-user"
+            label="STUDENT INFORMATION"
+            group="somegroup"
+            default-opened
+            header-class="bg-green text-white"
+            class="shadow-11"
+            expand-icon-class="text-white"
+          >
+            <q-card>
+              <q-card-section>
+                <q-input
+                  outlined
+                  square
+                  type="text"
+                  hint=""
+                  color="primary"
+                  v-model="studentInformation.studentNo"
+                  label="Student #"
+                  autocomplete="off"
+                  readonly
+                />
+                <q-input
+                  outlined
+                  square
+                  type="text"
+                  hint=""
+                  color="primary"
+                  v-model="studentInformation.lastName"
+                  label="Last Name"
+                  autocomplete="off"
+                />
+                <q-input
+                  outlined
+                  square
+                  type="text"
+                  hint=""
+                  color="primary"
+                  v-model="studentInformation.firstName"
+                  label="First Name"
+                  autocomplete="off"
+                />
+                <q-input
+                  outlined
+                  square
+                  type="text"
+                  hint=""
+                  color="primary"
+                  v-model="studentInformation.middleName"
+                  label="Middle Name"
+                  autocomplete="off"
+                />
+                <q-input
+                  outlined
+                  square
+                  type="text"
+                  label="Email Address"
+                  hint=""
+                  color="primary"
+                  autocomplete="off"
+                  v-model="studentInformation.emailAddress"
+                  :rules="[ val => val && val.length > 0 || 'Please enter your Email', isValidEmail]"
+                />
+                <q-input
+                  outlined
+                  square
+                  ref="birthdate"
+                  v-model="studentInformation.birthdate"
+                  mask="date"
+                  :rules="['date']"
+                  label="Birthdate"
+                  hint=""
+                  autocomplete="off"
+                >
+                  <template v-slot:append>
+                    <q-icon name="event" class="cursor-pointer">
+                      <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                        <q-date v-model="studentInformation.birthdate">
+                          <div class="row items-center justify-end">
+                            <q-btn v-close-popup label="Close" color="primary" flat />
+                          </div>
+                        </q-date>
+                      </q-popup-proxy>
+                    </q-icon>
+                  </template>
+                </q-input>
+                <q-input
+                  outlined
+                  square
+                  type="number"
+                  hint=""
+                  color="primary"
+                  v-model="studentInformation.contactNumber"
+                  label="Contact Number"
+                  autocomplete="off"
+                />
+                <q-input
+                  outlined
+                  square
+                  type="text"
+                  hint=""
+                  color="primary"
+                  v-model="studentInformation.fbLink"
+                  label="FB Link"
+                  autocomplete="off"
+                />
+              </q-card-section>
+              <q-card-actions align="center">
+                <q-btn 
+                  :loading="updateLoading"
+                  icon="fas fa-user-edit"
+                  color="orange"
+                  @click="updateStudent"
+                  type="button"
+                >
+                  <span class="q-pl-md">UPDATE</span>
+                  <template v-slot:loading>
+                    <q-spinner-hourglass class="on-left" />
+                    LOADING ...
+                  </template>
+                </q-btn>
+              </q-card-actions>
+            </q-card>
+          </q-expansion-item>
+        </q-card-section>
+        <q-inner-loading :showing="this.studentLoading">
+          <q-spinner-cube size="50px" color="primary" />
+        </q-inner-loading>
       </q-card>
       <q-dialog v-model="recitationDialog" persistent>
         <q-card style="width:450px;">
@@ -61,6 +187,7 @@
 import { defineComponent } from 'vue'
 import { mapGetters } from 'vuex'
 export default defineComponent({
+  props: ['studentInfo'],
   name: 'StudentDashboard',
   data () {
     return {
@@ -68,7 +195,21 @@ export default defineComponent({
       recitationQuestion: null,
       recitationAnswer: null,
       items: [],
-      cardLoading: null
+      cardLoading: null,
+      studentLoading: null,
+      updateLoading: null,
+      studentInformation: {
+        studentNo: null,
+        firstName: null,
+        middleName: null,
+        lastName: null,
+        contactNumber: null,
+        emailAddress: null,
+        fbLink: null,
+        hashKey: null,
+        birthdate: null,
+        fullName: null
+      },
     }
   },
   watch: {
@@ -99,18 +240,47 @@ export default defineComponent({
       if (data.message === 'recitation') {
         self.recitationAnswer = null
         self.recitationDialog = true
+      } else if (data.message === 'remove-recitation') {
+        self.recitationAnswer = null
+        self.recitationDialog = false
       } else {
         self.recitationDialog = false
       }
     });
-
+    
+    this.formatStudentInfo()
   },
   methods: {
+    formatStudentInfo () {
+      if (this.studentInfo.length > 0) {
+        this.studentLoading = true
+        setTimeout(async () => {
+          this.studentInformation.studentNo = this.studentInfo[0].student_id
+          this.studentInformation.firstName = this.studentInfo[0].first_name
+          this.studentInformation.middleName = this.studentInfo[0].middle_name
+          this.studentInformation.lastName = this.studentInfo[0].last_name
+          this.studentInformation.contactNumber = this.studentInfo[0].contact_number
+          this.studentInformation.emailAddress = this.studentInfo[0].email_address
+          this.studentInformation.fbLink = this.studentInfo[0].fb_link
+          this.studentInformation.hashKey = this.studentInfo[0].hash_key
+          this.studentInformation.birthdate = this.studentInfo[0].birthdate
+          this.studentInformation.fullName = this.studentInfo[0].fullName
+          this.studentLoading = false
+        }, 2000)
+      }
+    },
+    isValidEmail (val) {
+      const emailPattern = /^(?=[a-zA-Z0-9@._%+-]{6,254}$)[a-zA-Z0-9._%+-]{1,64}@(?:[a-zA-Z0-9-]{1,63}\.){1,8}[a-zA-Z]{2,63}$/
+      return emailPattern.test(val) || 'Invalid email'
+    },
     submitAnswer () {
       this.recitationDialog = false
     },
     openDialog () {
       this.recitationDialog = true
+    },
+    updateStudent () {
+      console.log('update')
     }
   }
 })

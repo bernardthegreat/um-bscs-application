@@ -69,3 +69,14 @@ export async function sendMessageRequest (state) {
   ).then((response) => response.json())
   return response
 }
+
+export async function removeQuestionMessage (state) {
+  const response = await fetch(
+    `${this.state.students.apiUrl}announcements/remove-question-dialog`,
+    {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    }
+  ).then((response) => response.json())
+  return response
+}

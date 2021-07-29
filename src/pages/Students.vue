@@ -4,7 +4,7 @@
     v-bind:class="{ 'items-center': !this.isLoggedIn }"
   >
     <login :role="'student'" v-if="!isLoggedIn"></login>
-    <student-dashboard  v-if="isLoggedIn"></student-dashboard>
+    <student-dashboard  v-if="isLoggedIn" :studentInfo="studentInfo"></student-dashboard>
   </q-page>
 </template>
 
