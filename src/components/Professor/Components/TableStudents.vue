@@ -17,12 +17,23 @@
     >
       <template v-slot:top-right>
         <div class="row q-gutter-md">
-          <q-btn
-            color="primary"
-            icon-right="fa fa-download"
-            no-caps
-            @click="exportTable"
-          />
+          <q-btn-group>
+            <q-btn
+              push icon="fas fa-sync-alt"
+              @click="resyncData"
+              color="green"
+            >
+              <q-tooltip>
+                RETRIEVE DATA
+              </q-tooltip>
+            </q-btn>
+            <q-btn
+              color="primary"
+              icon-right="fa fa-download"
+              no-caps
+              @click="exportTable"
+            />
+          </q-btn-group>
           <q-input dense debounce="300" v-model="filter" placeholder="Search">
             <template v-slot:append>
               <q-icon name="search" />
@@ -46,6 +57,9 @@
           </q-td>
           <q-td key="contact_number" :props="props">
             {{ props.row.contact_number }}
+          </q-td>
+          <q-td key="question" :props="props">
+            {{ props.row.question }}
           </q-td>
           <q-td key="answer" :props="props">
             {{ props.row.answer }}
@@ -322,6 +336,9 @@ export default defineComponent({
     updateStudent () {
       console.log('herererere')
     },
+    resyncData () {
+      this.$emit('getStudents')
+    },
     triggerSucccess () {
       // we need to get the notification reference
       // otherwise it will never get dismissed ('ongoing' type has timeout 0)
@@ -339,7 +356,7 @@ export default defineComponent({
         })
         this.approveLoading = false
         this.closeDialog()
-        this.$emit('getStudents')
+        this.resyncData()
       }, 3000)
     },
     exportTable () {

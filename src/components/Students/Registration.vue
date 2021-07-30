@@ -106,7 +106,7 @@
                 </vue-recaptcha>
               </q-card-section>
               <q-card-section v-if="errorMessage !== null">
-                <q-banner class="bg-red q-my-md">
+                <q-banner class="bg-red q-my-md text-white">
                   <template v-slot:avatar>
                     <q-icon name="fas fa-exclamation-triangle" />
                   </template>
@@ -181,8 +181,19 @@ export default defineComponent({
     async onSubmitRegistration () {
       this.disableRegistrationButton = true
       this.disableButton = true
-      var register = await this.$store.dispatch('students/registerStudent', this.studentInformation)
-      this.triggerSuccess()
+      const studentInfo = {
+        username: this.studentInformation.studentNo,
+        checking: true
+      }
+      const studentLogin = await this.$store.dispatch('students/students', studentInfo)
+      if (studentLogin.success === 'Success') {
+        this.errorMessage = 'You are already registered'
+        this.disableButton = false
+        this.disableRegistrationButton = false
+      } else {
+        var register = await this.$store.dispatch('students/registerStudent', this.studentInformation)
+        this.triggerSuccess()
+      }
     },
     triggerSuccess () {
       // we need to get the notification reference
@@ -216,7 +227,6 @@ export default defineComponent({
       this.$refs.vueRecaptcha.reset();
     },
     recaptchaFailed() {
-      console.log('hererefailed')
       this.disableButton = true
     },
   }

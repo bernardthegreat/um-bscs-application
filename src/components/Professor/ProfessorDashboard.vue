@@ -116,7 +116,8 @@ export default defineComponent({
         },
         { name: 'fullName', align: 'left', label: 'Name', field: 'fullName', sortable: true },
         { name: 'contact_number', label: 'Contact #', field: 'contact_number', align: 'left', sortable: true },
-        { name: 'answer', label: 'Recitation', field: 'answer', align: 'left', sortable: true }
+        { name: 'question', label: 'Question', field: 'question', align: 'left', sortable: true },
+        { name: 'answer', label: 'Answer', field: 'answer', align: 'left', sortable: true }
       ],
       questionDialog: null
     }

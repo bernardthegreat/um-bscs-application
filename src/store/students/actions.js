@@ -56,6 +56,16 @@ export async function students (state, studentInfo) {
         }
         const time = `${hr}:${min} ${ampm}`
         result.createdDateTime = `${mo} ${da}, ${ye} ${time}`
+        result.middle_name = result.middle_name === 'null' ? null : result.middle_name
+        
+        if (result.birthdate !== null) {
+          const birthdayFormat = new Date(result.birthdate)
+          const formatYearFirst = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(birthdayFormat)
+          const formatMonthFirst = new Intl.DateTimeFormat('en', { month: '2-digit' }).format(birthdayFormat)
+          const formatDayFirst = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(birthdayFormat)
+          const formattedBirthday = `${formatYearFirst}/${formatMonthFirst}/${formatDayFirst}`
+          result.birthdate = formattedBirthday
+        }
       }
       
       const registeredStudents = response.filter((result) => result.active === '1')
@@ -70,11 +80,12 @@ export async function students (state, studentInfo) {
             error: null
           }
         } else {
-          var registered = floatingStudents
+          var registered = response
+          // var registered = registeredStudents
           // if (floatingStudents.length > 0) {
           //   return {
           //     success: null,
-          //     error: 'Your professor will notify you if you have been verified. Thank you!'
+          //     error: 'Student not yet verified, please contact your Professor!'
           //   }
           // } 
 
@@ -106,11 +117,41 @@ export async function students (state, studentInfo) {
   }
 }
 
-export async function logout (state) {
-  Cookies.remove('isStudentLoggedIn')
-  state.commit('setInitValues')
+
+export async function updateStudentProfile (state, studentProfile) {
+  const response = await fetch(
+    `${this.state.students.apiUrl}students/update-student`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(studentProfile)
+    }
+  ).then((response) => response.json())
+  return {
+    error: response.error,
+    message: response.message
+  }
 }
 
-export async function getDialog (state) {
-  console.log('hererererererere')
+
+export async function answerQuestion (state, answerInfo) {
+  const response = await fetch(
+    `${this.state.students.apiUrl}students/answer-question`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(answerInfo)
+    }
+  ).then((response) => response.json())
+  return {
+    error: response.error,
+    message: response.message
+  }
+}
+
+export async function logout (state) {
+  console.log('here')
+  Cookies.remove('isStudentLoggedIn')
+  Cookies.remove('studentID')
+  state.commit('setInitValues')
 }

@@ -27,7 +27,8 @@ const routes = [
     path: '/students',
     component: () => import('layouts/AppLayout.vue'),
     children: [
-      { path: '', name: 'Students', component: () => import('src/pages/Students.vue') }
+      { path: '/students', name: 'Students', component: () => import('src/pages/Students.vue') },
+      { path: '/students/attendance', name: 'Attendance', component: () => import('src/components/Students/Attendance.vue') }
     ]
   },
 

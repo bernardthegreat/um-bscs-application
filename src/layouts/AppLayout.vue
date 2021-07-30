@@ -79,7 +79,7 @@
               </div>
             </q-card-section>
             <q-inner-loading :showing="this.studentLoading">
-              <q-spinner-cube size="50px" color="primary" />
+              <q-spinner-puff size="90px" color="primary" />
             </q-inner-loading>
             <q-separator></q-separator>
             <q-list>
@@ -146,7 +146,6 @@ export default defineComponent({
     },
     studentInfo (val) {
       if (val.length > 0) {
-        console.log('herrerereer')
         this.studentLoading = true
         this.isLoggedIn = true
         setTimeout(async () => {
@@ -173,7 +172,7 @@ export default defineComponent({
         } else {
           this.isLoggedIn = false
         }
-      } else if (currentRoute === 'Students') {
+      } else if (currentRoute === 'Students' || currentRoute === 'Attendance') {
         const checkStudentCookies = this.$q.cookies.has('isStudentLoggedIn')
         if (checkStudentCookies) {
           this.isLoggedIn = true
@@ -182,8 +181,6 @@ export default defineComponent({
         }
       }
       this.currentUser = currentRoute
-      
-      console.log(this.currentUser)
     },
     logout () {
       var currentRoute = this.$router.currentRoute.value.name
@@ -191,6 +188,9 @@ export default defineComponent({
         this.$store.dispatch('professors/logout')
       } else if (currentRoute === 'Students') {
         this.$store.dispatch('students/logout')
+      } else if (currentRoute === 'Attendance') {
+        this.$store.dispatch('students/logout')
+        this.$router.push('/students')
       }
       this.isLoggedIn = false
     }

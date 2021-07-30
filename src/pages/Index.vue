@@ -10,7 +10,28 @@
               ANNOUNCEMENTS
             </div>
             <div>
-              <q-btn color="secondary" :to="'/registration'" icon="fa fa-user-edit" label="Register Here"></q-btn>
+              <q-btn-group>
+                <q-btn
+                  color="secondary"
+                  :to="'/registration'"
+                  icon="fa fa-user-edit"
+                  push
+                >
+                  <q-tooltip class="bg-green" :offset="[10, 10]">
+                    REGISTER HERE
+                  </q-tooltip>
+                </q-btn>
+                <q-btn
+                  color="secondary"
+                  :to="'/students'"
+                  icon="fa fa-sign-in-alt"
+                  push
+                >
+                  <q-tooltip class="bg-green" :offset="[10, 10]">
+                    LOGIN HERE
+                  </q-tooltip>
+                </q-btn>
+              </q-btn-group>
             </div>
           </div>
         </q-card-section>
@@ -71,7 +92,7 @@ export default defineComponent({
     }
   },
   mounted () {
-    this.getAnnouncements()
+    this.checkAuthentication()
     // var channel = pusher.subscribe('my-channel')
     // channel.bind('my-event', function(data) {
     //   this.messages = JSON.stringify(data)
@@ -85,8 +106,16 @@ export default defineComponent({
   },
   methods: {
     async getAnnouncements () {
-      this.announcementLoading = true
       await this.$store.dispatch('announcements/getAnnouncements')
+    },
+    async checkAuthentication () {
+      this.announcementLoading = true
+      const checkCookies = this.$q.cookies.has('isStudentLoggedIn')
+      if (checkCookies) {
+        this.$router.push('/students')
+      } else {
+        this.getAnnouncements()
+      }
       this.announcementLoading = false
     }
   }

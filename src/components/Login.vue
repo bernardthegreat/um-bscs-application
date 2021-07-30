@@ -118,6 +118,7 @@ export default defineComponent({
         } if (this.role === 'student') {
           const studentLogin = await this.$store.dispatch('students/students', this.loginForm)
           if (studentLogin.success === null) {
+            this.loginForm.password = null
             this.loginFormErrorMessage = studentLogin.error
           } else {
             this.loginFormErrorMessage = null

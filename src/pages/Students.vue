@@ -1,10 +1,12 @@
 <template>
   <q-page
-    class="row justify-center"
+    class=""
     v-bind:class="{ 'items-center': !this.isLoggedIn }"
-  >
-    <login :role="'student'" v-if="!isLoggedIn"></login>
-    <student-dashboard  v-if="isLoggedIn" :studentInfo="studentInfo"></student-dashboard>
+  > 
+    <div class="row justify-center" v-if="!isLoggedIn">
+      <login :role="'student'"></login>
+    </div>
+    <student-dashboard v-if="isLoggedIn" :studentInfo="studentInfo" @getStudents="checkAuthentication"></student-dashboard>
   </q-page>
 </template>
 
