@@ -48,6 +48,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import { defineComponent } from 'vue';
 export default defineComponent({
   data () {
@@ -57,6 +58,11 @@ export default defineComponent({
       resendLoading: null,
       removeLoading: null
     }
+  },
+  computed: {
+    ...mapGetters({
+      wsConnection: 'students/wsConnection'
+    })
   },
   methods: {
     async submitQuestion () {
@@ -80,14 +86,23 @@ export default defineComponent({
         }
       })
     },
+    sendToWS (wsMessage) {
+      this.wsConnection.send(wsMessage)
+    },
     async sendMessageRequest () {
       this.resendLoading = true
-      await this.$store.dispatch('professors/sendMessageRequest')
+      const wsMessage = {
+        wsMessage: 'Ask Question'
+      }
+      this.sendToWS(wsMessage.wsMessage)
       this.resendLoading = false
     },
     async removeMessage () {
       this.removeLoading = true
-      await this.$store.dispatch('professors/removeQuestionMessage')
+      const wsMessage = {
+        wsMessage: 'Close Question Dialog'
+      }
+      this.sendToWS(wsMessage.wsMessage)
       this.removeLoading = false
     },
     triggerSucccess () {

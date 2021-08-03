@@ -174,11 +174,15 @@ export default defineComponent({
     reload () {
       location.reload()
     },
+    async initiateWebSocket () {
+      await this.$store.dispatch('students/initiateWebSocket')
+    },
     async checkAuthentication () {
       var currentRoute = this.$router.currentRoute.value.name
       if (currentRoute === 'Professors') {
         const checkProfessorCookies = this.$q.cookies.has('isProfessorLoggedIn')
         if (checkProfessorCookies) {
+          this.initiateWebSocket()
           this.isLoggedIn = true
         } else {
           this.isLoggedIn = false
@@ -186,6 +190,7 @@ export default defineComponent({
       } else if (currentRoute === 'Students' || currentRoute === 'Attendance') {
         const checkStudentCookies = this.$q.cookies.has('isStudentLoggedIn')
         if (checkStudentCookies) {
+          this.initiateWebSocket()
           this.isLoggedIn = true
         } else {
           this.isLoggedIn = false

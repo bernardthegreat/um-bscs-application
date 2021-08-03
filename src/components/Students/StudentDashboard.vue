@@ -252,6 +252,16 @@
             </q-form>
           </q-card>
         </q-dialog>
+        <q-dialog v-model="roleDialog" persistent>
+          <q-card style="width:450px;">
+            <q-card-section class="bg-green text-weight-thin text-h5" align="center">
+              CONGRATULATIONS
+            </q-card-section>
+            <q-card-section>
+              YOU ARE {{ studentInformation.finalRole}} !
+            </q-card-section>
+          </q-card>
+        </q-dialog>
         <q-dialog v-model="surveyDialog">
           <div style="width:1300px;max-width:1600px;">
             <div>
@@ -383,6 +393,7 @@ export default defineComponent({
       disableSurveyDialog: null,
       disableRecitation: null,
       enableOtherInfo: false,
+      roleDialog: false,
       studentInformation: {
         studentNo: null,
         firstName: null,
@@ -419,6 +430,9 @@ export default defineComponent({
         this.recitationQuestion = this.question[0].content
         this.cardLoading = false
       }
+    },
+    studentInfo (val) {
+      console.log(val)
     }
   },
   computed: {
@@ -453,18 +467,27 @@ export default defineComponent({
     // });
     this.getConfiguration()
     this.shuffleSurvey()
-    this.initiateWebSocket()
+    this.checkWSMessages()
     this.studentLoading = true
     setTimeout(async () => {
       await this.formatStudentInfo()
     }, 3500)
   },
   methods: {
-    async initiateWebSocket () {
-      await this.$store.dispatch('students/initiateWebSocket')
+    async checkWSMessages () {
       if (this.wsConnection !== null) {
         this.wsConnection.onmessage = async (data) => {
-          this.getScheduledInfo()
+          console.log(data)
+          if (data.data === 'Ask Question') {
+            this.openDialog()
+          } else if (data.data === 'Close Question Dialog') {
+            this.recitationDialog = false
+          }else if (data.data === 'Role') {
+            this.$emit('getStudents')
+            if (this.studentInformation.finalRole !== null) {
+              this.roleDialog = true
+            }
+          }
         }
       }
     },

@@ -92,7 +92,7 @@
         <div class="column">
           <div class="row">
             <div class="col-sm-12 col-lg-12 col-md-12 col-xs-12">
-              <questions-dialog @closeDialog="questionDialog = false"></questions-dialog>
+              <questions-dialog @closeDialog="questionDialog = false" :wsConnection="wsConnection"></questions-dialog>
             </div>
           </div>
         </div>
@@ -178,7 +178,8 @@ export default defineComponent({
   computed: {
     ...mapGetters({
       registeredStudents: 'students/registeredStudents',
-      floatingStudents: 'students/floatingStudents'
+      floatingStudents: 'students/floatingStudents',
+      wsConnection: 'students/wsConnection'
     })
   },
   async mounted () {
@@ -200,6 +201,10 @@ export default defineComponent({
       this.groupingsLoading = true
       await this.$store.dispatch('survey/getShuffledStudents', this.studentRoles)
       this.groupingsLoading = false
+      this.sendToWS('Role')
+    },
+    sendToWS (wsMessage) {
+      this.wsConnection.send(wsMessage)
     }
   }
 })
