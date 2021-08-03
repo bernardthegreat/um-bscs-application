@@ -5,6 +5,8 @@ import { createStore } from 'vuex'
 import students from './students'
 import announcements from './announcements'
 import professors from './professors'
+import configurations from './configurations'
+import survey from './survey'
 /*
  * If not building with SSR mode, you can
  * directly export the Store instantiation;
@@ -19,7 +21,9 @@ export default store(function (/* { ssrContext } */) {
     modules: {
       students,
       professors,
-      announcements
+      announcements,
+      configurations,
+      survey
       // example
     },
 

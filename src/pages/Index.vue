@@ -2,7 +2,7 @@
   <q-page
     class="row justify-center"
   >
-    <div class="col-lg-6 col-sm-12 col-md-12 col-xs-12 q-ma-lg">
+    <div class="col-lg-6 col-sm-12 col-md-12 col-xs-12 q-ma-lg q-pa-sm">
       <q-card square class="shadow-24">
         <q-card-section class="bg-primary text-white">
           <div class="row justify-between">
@@ -64,12 +64,12 @@
             <other-announcements :otherAnnouncements="otherAnnouncements"></other-announcements>
           </q-expansion-item>
         </q-card-section>
-        <q-card-section align="center" v-if="announcementLoading">
+        <q-card-section align="center" class="q-mt-xl q-pt-xs" v-if="announcementLoading">
           <div class="text-h5 text-weight-thin">
             LOADING ANNOUNCEMENTS
           </div>
         </q-card-section>
-        <q-inner-loading :showing="this.announcementLoading">
+        <q-inner-loading :showing="this.announcementLoading" class="">
           <q-spinner-gears size="50px" color="primary" />
         </q-inner-loading>
       </q-card>
@@ -107,6 +107,7 @@ export default defineComponent({
   methods: {
     async getAnnouncements () {
       await this.$store.dispatch('announcements/getAnnouncements')
+      this.announcementLoading = false
     },
     async checkAuthentication () {
       this.announcementLoading = true
@@ -116,7 +117,6 @@ export default defineComponent({
       } else {
         this.getAnnouncements()
       }
-      this.announcementLoading = false
     }
   }
 })

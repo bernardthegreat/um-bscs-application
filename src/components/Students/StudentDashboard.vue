@@ -8,9 +8,12 @@
               <div class="text-h5 text-white text-weight-thin">
                 UM BSCS STUDENT APPLICATION STUDENT DASHBOARD
               </div>
-              <!-- <div>
-                <q-btn color="secondary" @click="openDialog" icon="fa fa-hand-sparkles"></q-btn>
-              </div> -->
+              <div>
+                <q-btn-group>
+                  <q-btn push color="secondary" @click="openDialog" icon="fa fa-hand-sparkles" v-if="!disableRecitation"></q-btn>
+                  <q-btn push color="secondary" @click="openSurvey" icon="fa fa-poll-h" v-if="!disableSurveyDialog"></q-btn>
+                </q-btn-group>
+              </div>
             </div>
           </q-card-section>
           <q-card-section>
@@ -139,6 +142,70 @@
                 </q-card-actions>
               </q-card>
             </q-expansion-item>
+
+            <q-expansion-item
+              expand-separator
+              icon="fa fa-user"
+              label="OTHER INFORMATION"
+              group="somegroup"
+              header-class="bg-green text-white"
+              class="shadow-11"
+              expand-icon-class="text-white"
+              v-if="enableOtherInfo"
+            >
+              <q-card>
+                <q-card-section align="center">
+                  <q-banner class="bg-orange text-white">
+                    {{ this.recitationQuestion }}
+                    <div v-for="(results, index) in studentInformation.roleResults" :key="index">
+                      {{ results.replace(':', ' - ').toUpperCase() }}
+                    </div>
+                  </q-banner>
+                </q-card-section>
+                <q-card-section>
+                  <q-input
+                    outlined
+                    v-model="studentInformation.firstRole"
+                    label="First Role"
+                    hint=""
+                    readonly
+                    :rules="[ val => val && val.length > 0 || 'Please enter your desired First Role']"
+                  />
+                  <q-input
+                    outlined
+                    v-model="studentInformation.secondRole"
+                    label="Second Role"
+                    hint=""
+                    readonly
+                    :rules="[ val => val && val.length > 0 || 'Please enter your desired Second Role']"
+                  />
+                  <q-input
+                    outlined
+                    v-model="studentInformation.thirdRole"
+                    label="Third Role"
+                    hint=""
+                    readonly
+                    :rules="[ val => val && val.length > 0 || 'Please enter your desired Third Role']"
+                  />
+                  <q-input
+                    outlined
+                    v-model="studentInformation.finalRole"
+                    label="Official Role"
+                    hint=""
+                    readonly
+                    :rules="[ val => val && val.length > 0 || 'Please enter your desired Third Role']"
+                  />
+                  <!-- <q-select
+                    outlined
+                    v-model="studentInformation.finalRole"
+                    :options="roles"
+                    label="Official Role"
+                    hint=""
+                    :rules="[ val => val && val.length > 0 || 'Please enter your desired Third Role']"
+                  /> -->
+                </q-card-section>
+              </q-card>
+            </q-expansion-item>
           </q-card-section>
           <q-inner-loading :showing="this.studentLoading">
             <q-spinner-ball size="90px" color="primary" />
@@ -185,6 +252,59 @@
             </q-form>
           </q-card>
         </q-dialog>
+        <q-dialog v-model="surveyDialog">
+          <div style="width:1300px;max-width:1600px;">
+            <div>
+              <q-card>
+                <q-card-section class="bg-primary text-h5 text-weight-thin text-white" align="center">
+                  SURVEY
+                </q-card-section>
+                <q-card-section>
+                  <div class="row justify-center q-col-gutter-md">
+                    <div class="col-lg-4" v-bind:key="key" v-for="(questions, key) in this.questionsArray">
+                      <q-card class="q-ma-md" style="height:225px;">
+                        <q-card-section align="center" class="bg-green text-white">
+                          <div class="text-h6 text-weight-thin">
+                            {{ questions.question.toUpperCase() }}
+                          </div>
+                        </q-card-section>
+                        <q-card-section align="center" class="q-pt-lg">
+                          <div>
+                            <q-radio size="lg" keep-color v-model="questions.isActive" :val="true" label="Yes" color="green" />
+                            <q-radio size="lg" keep-color v-model="questions.isActive" :val="false" label="No" color="red" />
+                          </div>
+                        </q-card-section>
+                      </q-card>
+                    </div>
+                  </div>
+                </q-card-section>
+                <q-card-section v-if="surveyError !== null">
+                  <div class="row justify-center">
+                    <div class="col-lg-3 col-xs-12 col-sm-12">
+                      <q-banner rounded class="bg-negative text-white">
+                        <template v-slot:avatar>
+                          <q-icon name="fa fa-times" color="white" />
+                        </template>
+                        {{ surveyError.toUpperCase() }}
+                      </q-banner>
+                    </div>
+                  </div>
+                </q-card-section>
+                <q-card-actions align="center">
+                  <q-btn push icon="fa fa-save" color="green" label="Submit Survey" @click="submitSurvey"></q-btn>
+                </q-card-actions>
+                <q-card-section align="center" v-if="surveyLoading">
+                  <div class="text-h5 text-weight-thin">
+                    PROCESSING SURVEY
+                  </div>
+                </q-card-section>
+                <q-inner-loading :showing="this.surveyLoading">
+                  <q-spinner-gears size="50px" color="primary" />
+                </q-inner-loading>
+              </q-card>
+            </div>
+          </div>
+        </q-dialog>
       </div>
     </div>
     <div class="col-lg-4 col-md-12 col-xs-12">
@@ -194,9 +314,6 @@
             <div class="text-h5 text-white text-weight-thin">
               ANNOUNCEMENTS
             </div>
-            <!-- <div>
-              <q-btn color="secondary" @click="openDialog" icon="fa fa-hand-sparkles"></q-btn>
-            </div> -->
           </div>
         </q-card-section>
         <q-card-section>
@@ -242,8 +359,9 @@
 </template>
 
 <script>
-import OtherAnnouncements from 'src/components/Announcements/OtherAnnouncements.vue';
-import PinnedAnnouncements from 'src/components/Announcements/PinnedAnnouncements.vue';
+import PinnedAnnouncements from 'src/components/Announcements/PinnedAnnouncements.vue'
+import OtherAnnouncements from 'src/components/Announcements/OtherAnnouncements.vue'
+import Survey from 'src/assets/files/survey.json'
 import { defineComponent } from 'vue'
 import { mapGetters } from 'vuex'
 export default defineComponent({
@@ -252,6 +370,8 @@ export default defineComponent({
   name: 'StudentDashboard',
   data () {
     return {
+      color: null,
+      surveyDialog: null,
       recitationDialog: null,
       recitationQuestion: null,
       recitationAnswer: null,
@@ -259,6 +379,10 @@ export default defineComponent({
       cardLoading: null,
       studentLoading: null,
       updateLoading: null,
+      surveyLoading: null,
+      disableSurveyDialog: null,
+      disableRecitation: null,
+      enableOtherInfo: false,
       studentInformation: {
         studentNo: null,
         firstName: null,
@@ -269,8 +393,22 @@ export default defineComponent({
         fbLink: null,
         hashKey: null,
         birthdate: null,
-        fullName: null
+        fullName: null,
+        firstRole: null,
+        secondRole: null,
+        thirdRole: null,
+        finalRole: null,
+        roleResults: null
       },
+      questionsArray: Survey,
+      surveyError: null,
+      roles: [
+        "System Analyst",
+        "UI / UX Designer",
+        "Programmer",
+        "Debugger or Tester",
+        "Researcher"
+      ]
     }
   },
   watch: {
@@ -287,41 +425,140 @@ export default defineComponent({
     ...mapGetters({
       question: 'announcements/question',
       pinnedAnnouncements: 'announcements/pinnedAnnouncements',
-      otherAnnouncements: 'announcements/otherAnnouncements'
+      otherAnnouncements: 'announcements/otherAnnouncements',
+      configurations: 'configurations/configurations',
+      wsConnection: 'students/wsConnection'
     })
   },
   async created () {
     this.getAnnouncements()
     this.recitationDialog = false
     
-    Pusher.logToConsole = true;
-    var pusher = new Pusher(process.env.PUSHER_KEY, {
-      cluster: 'ap1'
-    });
-    var channel = pusher.subscribe('my-channel');
-    var self = this
-    channel.bind('my-event', async function(data) {
-      if (data.message === 'recitation') {
-        self.recitationAnswer = null
-        self.recitationDialog = true
-      } else if (data.message === 'remove-recitation') {
-        self.recitationAnswer = null
-        self.recitationDialog = false
-      } else {
-        self.recitationDialog = false
-      }
-    });
-    
+    // Pusher.logToConsole = true;
+    // var pusher = new Pusher(process.env.PUSHER_KEY, {
+    //   cluster: 'ap1'
+    // });
+    // var channel = pusher.subscribe('my-channel');
+    // var self = this
+    // channel.bind('my-event', async function(data) {
+    //   if (data.message === 'recitation') {
+    //     self.recitationAnswer = null
+    //     self.recitationDialog = true
+    //   } else if (data.message === 'remove-recitation') {
+    //     self.recitationAnswer = null
+    //     self.recitationDialog = false
+    //   } else {
+    //     self.recitationDialog = false
+    //   }
+    // });
+    this.getConfiguration()
+    this.shuffleSurvey()
+    this.initiateWebSocket()
     this.studentLoading = true
     setTimeout(async () => {
       await this.formatStudentInfo()
-    }, 2000)
+    }, 3500)
   },
   methods: {
+    async initiateWebSocket () {
+      await this.$store.dispatch('students/initiateWebSocket')
+      if (this.wsConnection !== null) {
+        this.wsConnection.onmessage = async (data) => {
+          this.getScheduledInfo()
+        }
+      }
+    },
+    openDialog () {
+      this.recitationDialog = true
+    },
+    openSurvey () {
+      this.surveyDialog = true
+    },
+    async submitSurvey () {
+      const filterNull = this.questionsArray.filter((result) => result.isActive === null)
+      if (filterNull.length > 0) {
+        this.surveyError = 'Please answer all questions'
+      } else {
+        this.surveyLoading = true
+        this.surveyError = null
+        const filterYesAnswers = this.questionsArray.filter((result) => result.isActive)
+        const systemAnalyst = filterYesAnswers.filter((result) => result.role === 'system_analyst')
+        const uiUXDesigner = filterYesAnswers.filter((result) => result.role === 'ui_ux_designer')
+        const programmer = filterYesAnswers.filter((result) => result.role === 'programmer')
+        const debuggerOrTester = filterYesAnswers.filter((result) => result.role === 'debugger_or_tester')
+        const researcher = filterYesAnswers.filter((result) => result.role === 'researcher')
+
+        var systemAnalystScore = 0
+        for (let i = 0; i < systemAnalyst.length; i++) {
+          systemAnalystScore += systemAnalyst[i].score;
+          systemAnalyst.overallScore = systemAnalystScore
+          systemAnalyst.name = 'System Analyst'
+        }
+
+        var uiUXDesignerScore = 0
+        for (let i = 0; i < uiUXDesigner.length; i++) {
+          uiUXDesignerScore += uiUXDesigner[i].score;
+          uiUXDesigner.overallScore = uiUXDesignerScore
+          uiUXDesigner.name = 'UI / UX Designer'
+        }
+
+        var programmerScore = 0
+        for (let i = 0; i < programmer.length; i++) {
+          programmerScore += programmer[i].score;
+          programmer.overallScore = programmerScore
+          programmer.name = 'Programmer'
+        }
+
+        var debuggerOrTesterScore = 0
+        for (let i = 0; i < debuggerOrTester.length; i++) {
+          debuggerOrTesterScore += debuggerOrTester[i].score;
+          debuggerOrTester.overallScore = debuggerOrTesterScore
+          debuggerOrTester.name = 'Debugger or Tester'
+        }
+
+        var researcherScore = 0
+        for (let i = 0; i < researcher.length; i++) {
+          researcherScore += researcher[i].score;
+          researcher.overallScore = researcherScore
+          researcher.name = 'Researcher'
+        }
+        const surveyResult = [
+          systemAnalyst,
+          uiUXDesigner,
+          programmer,
+          debuggerOrTester,
+          researcher
+        ]
+        const survey = await this.$store.dispatch('survey/computeSurvey', surveyResult)
+        if (survey.message !== null) {
+          this.$emit('getStudents')
+          this.disableSurveyDialog = true
+          this.triggerSurveySucccess()
+        }
+      }
+    },
+    async shuffleSurvey () {
+      for (let i = Survey.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [Survey[i], Survey[j]] = [Survey[j], Survey[i]];
+      }
+    },
+    async getConfiguration () {
+      await this.$store.dispatch('configurations/getConfigurations')
+      const recitation = this.configurations.filter((result) => result.name === 'students_recitation')
+      if (!recitation[0].active) {
+        this.disableRecitation = true
+      }
+    },
     async getAnnouncements () {
       this.cardLoading = true
       await this.$store.dispatch('announcements/getAnnouncements')
       this.cardLoading = false
+    },
+    removeRole (index) {
+      const shallowCopyArray = Array.from(this.roles)
+      shallowCopyArray.splice(index, 1)
+      this.roles = shallowCopyArray
     },
     formatStudentInfo () {
       if (this.studentInfo.length > 0) {
@@ -335,7 +572,15 @@ export default defineComponent({
         this.studentInformation.hashKey = this.studentInfo[0].hash_key
         this.studentInformation.birthdate = this.studentInfo[0].birthdate
         this.studentInformation.fullName = this.studentInfo[0].fullName
+        this.studentInformation.firstRole = this.studentInfo[0].first_role
+        this.studentInformation.secondRole = this.studentInfo[0].second_role
+        this.studentInformation.thirdRole = this.studentInfo[0].third_role
+        this.studentInformation.finalRole = this.studentInfo[0].final_role
+        this.studentInformation.roleResults = this.studentInfo[0].role_results
         this.studentLoading = false
+        if (this.studentInfo[0].role_results !== null) {
+          this.disableSurveyDialog = true
+        }
       }
     },
     isValidEmail (val) {
@@ -385,6 +630,25 @@ export default defineComponent({
           timeout: 1000
         })
         this.updateLoading = false
+      }, 3000)
+    },
+    triggerSurveySucccess () {
+      // we need to get the notification reference
+      // otherwise it will never get dismissed ('ongoing' type has timeout 0)
+      const notif = this.$q.notify({
+        type: 'ongoing',
+        message: 'Saving survey...'
+      })
+
+      // simulate delay
+      setTimeout(() => {
+        notif({
+          type: 'positive',
+          message: 'Student successfully completed this Survey!',
+          timeout: 1000
+        })
+        this.surveyLoading = false
+        this.surveyDialog = false
       }, 3000)
     },
   }

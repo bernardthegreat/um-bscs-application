@@ -51,9 +51,12 @@ module.exports = configure(function (ctx) {
         // API_URL: 'http://localhost:3000/',
         API_URL: 'https://um-rest-api.vercel.app/',
         API_KEY: '54inqmZQ2GUsjioM2tQmTMF1hXBv1zzw',
+        EXTERNAL_API_URL: 'https://apps.uerm.edu.ph:3443/',
+        EXTERNAL_API_KEY: 'So1DSBKffnbTKwdgIIcetg2z3GyNKeQi',
         LOCAL_API_URL: 'http://localhost:3000/',
         LOCAL_API_KEY: '54inqmZQ2GUsjioM2tQmTMF1hXBv1zzw',
-        PUSHER_KEY: '685dac16b7a3bc62de54'
+        PUSHER_KEY: '685dac16b7a3bc62de54',
+        WS_URL: 'wss://apps.uerm.edu.ph:3443/',
       },
       // transpile: false,
 

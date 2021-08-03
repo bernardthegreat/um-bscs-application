@@ -1,4 +1,34 @@
 import { Cookies } from 'quasar'
+export async function initiateWebSocket (state) {
+  console.log('Starting connection to WebSocket Server')
+  try {
+    const responseWS = await fetch(
+      `${this.state.students.exteralAPIUrl}covid-vaccination/ws?auth=${this.state.students.exteralAPIKey}`,
+      {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      }
+    ).then((response) => response)
+    if (responseWS) {
+      var connection = new WebSocket(`${process.env.WS_URL}/covid-vaccination/ws`)
+      connection.onopen = (event) => {
+        console.log('Successfully connected to the websocket server...')
+      }
+      state.commit('setWebsocketConnection', connection)
+      // connection.onmessage = (event) => {
+      //   console.log(event)
+      // }
+    }
+  } catch (error) {
+    console.log(error)
+    return error
+  }
+  // connection.onopen = (event) => {
+  //   console.log(event)
+  //   console.log('Successfully connected to the websocket server...')
+  // }
+}
+
 export async function registerStudent (state, studentInfo) {
   const response = await fetch(
     `${this.state.students.apiUrl}students/register-student`,
@@ -34,7 +64,6 @@ export async function students (state, studentInfo) {
         }
       ).then((response) => response.json())
     }
-    
     if (response.length > 0) {
       for (var result of response) {
         const fullName = `${result.last_name}, ${result.first_name} ${result.middle_name === 'null' ? '' : result.middle_name}`
@@ -55,7 +84,32 @@ export async function students (state, studentInfo) {
           ampm = 'PM'
         }
         const time = `${hr}:${min} ${ampm}`
-        result.createdDateTime = `${mo} ${da}, ${ye} ${time}`
+          result.createdDateTime = `${mo} ${da}, ${ye} ${time}`
+
+        try {
+          if (result.answer_datetime !== null) {
+            const answerDate = result.answer_datetime
+            const ansDate = new Date(answerDate)
+            const ansYear = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(ansDate)
+            const ansMonth = new Intl.DateTimeFormat('en', { month: 'long' }).format(ansDate)
+            const ansDay = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(ansDate)
+            var ansMin = ansDate.getMinutes()
+            var ansHr = ansDate.getHours()
+            if (ansMin < 10) {
+              ansMin = '0' + ansMin
+            }
+            var ansAmpm = 'AM'
+            if (ansHr > 12) {
+              ansHr -= 12
+              ansAmpm = 'PM'
+            }
+            const ansTime = `${ansHr}:${ansMin} ${ansAmpm}`
+            result.answerDateTime = `${ansMonth} ${ansDay}, ${ansYear} ${ansTime}`
+          }
+        } catch (error) {
+          console.log(error)
+        }
+
         result.middle_name = result.middle_name === 'null' ? null : result.middle_name
         
         if (result.birthdate !== null) {

@@ -1,0 +1,178 @@
+[
+  {
+    "question": "Are you a critical thinker?",
+    "code": "are_you_a_critical_thinker",
+    "role": "system_analyst",
+    "score": 1,
+    "isActive": null
+  },
+  {
+    "question": "Do you have good problem-solving skils?",
+    "code": "do_you_have_good_problem_solving_skills",
+    "role": "system_analyst",
+    "score": 1,
+    "isActive": null
+  },
+
+  {
+    "question": "Are you a constant learner and always seeking more knowledge?",
+    "code": "are_you_a_constant_learner_and_always_seeking_more_knowledge",
+    "role": "system_analyst",
+    "score": 1,
+    "isActive": null
+  },
+  {
+    "question": "Do you have good written and communication skills?",
+    "code": "do_you_have_good_written_and_communication_skills",
+    "role": "system_analyst",
+    "score": 2,
+    "isActive": null
+  },
+  {
+    "question": "Do you like working with a team?",
+    "code": "do_you_like_working_with_a_team",
+    "role": "system_analyst",
+    "score": 2,
+    "isActive": null
+  },
+  {
+    "question": "Are you creative?",
+    "code": "are_you_creative",
+    "role": "ui_ux_designer",
+    "score": 2,
+    "isActive": null
+  },
+  {
+    "question": "Do you empathize users that struggles in using a system?",
+    "code": "do_you_empathize_users_that_struggles_in_using_a_system",
+    "role": "ui_ux_designer",
+    "score": 2,
+    "isActive": null
+  },
+  {
+    "question": "Do you adapt to changes in any working environment?",
+    "code": "do_you_adapt_to_changes_in_any_working_environment",
+    "role": "ui_ux_designer",
+    "score": 1,
+    "isActive": null
+  },
+  {
+    "question": "Are you attentive to details?",
+    "code": "are_you_attentive_to_details",
+    "role": "ui_ux_designer",
+    "score": 1,
+    "isActive": null
+  },
+  {
+    "question": "Are you willing to improve yourself?",
+    "code": "do_you_have_good_problem_solving_skills",
+    "role": "ui_ux_designer",
+    "score": 1,
+    "isActive": null
+  },
+  {
+    "question": "Do you think outside the box?",
+    "code": "do_you_think_outside_the_box",
+    "role": "programmer",
+    "score": 2,
+    "isActive": null
+  },
+  {
+    "question": "Do you usually meet deadlines?",
+    "code": "do_you_usually_meet_deadlines",
+    "role": "programmer",
+    "score": 1,
+    "isActive": null
+  },
+  {
+    "question": "Are you willing to learn?",
+    "code": "are_you_willing_to_learn",
+    "role": "programmer",
+    "score": 1,
+    "isActive": null
+  },
+  {
+    "question": "Do you sometimes felt lazy and find ways to make your work easier?",
+    "code": "do_you_sometimes_felt_lazy_and_finds_ways_to_make_your_work_easier",
+    "role": "programmer",
+    "score": 2,
+    "isActive": null
+  },
+  {
+    "question": "Do you like exploring new things or trying out new technologies?",
+    "code": "do_you_like_exploring_new_things_or_trying_out_new_technologies",
+    "role": "programmer",
+    "score": 1,
+    "isActive": null
+  },
+  {
+    "question": "Can you present negative things in a positive way?",
+    "code": "can_you_present_negative_things_in_a_positive_way",
+    "role": "debugger_or_tester",
+    "score": 2,
+    "isActive": null
+  },
+  {
+    "question": "Are you good in reporting?",
+    "code": "are_you_good_in_reporting",
+    "role": "debugger_or_tester",
+    "score": 1,
+    "isActive": null
+  },
+  {
+    "question": "Are you not a shy person and is not afraid to ask questions?",
+    "code": "are_you_not_a_shy_person_and_is_not_afraid_to_ask_questions",
+    "role": "debugger_or_tester",
+    "score": 2,
+    "isActive": null
+  },
+  {
+    "question": "Are you an organized person?",
+    "code": "are_you_an_organized_person",
+    "role": "debugger_or_tester",
+    "score": 1,
+    "isActive": null
+  },
+  {
+    "question": "Do you know how to analyze data?",
+    "code": "do_you_know_how_to_analyze_data",
+    "role": "debugger_or_tester",
+    "score": 1,
+    "isActive": null
+  },
+  {
+    "question": "Are you a good observer?",
+    "code": "are_you_a_good_observer",
+    "role": "researcher",
+    "score": 2,
+    "isActive": null
+  },
+  {
+    "question": "Are you approachable?",
+    "code": "are_you_approachable",
+    "role": "researcher",
+    "score": 1,
+    "isActive": null
+  },
+  {
+    "question": "Do you like meeting new people?",
+    "code": "do_you_like_meeting_new_people",
+    "role": "researcher",
+    "score": 1,
+    "isActive": null
+  },
+  {
+    "question": "Are you a person that don't believe anything from the internet?",
+    "code": "are_you_a_person_that_dont_believe_anything_from_the_internet",
+    "role": "researcher",
+    "score": 2,
+    "isActive": null
+  },
+  {
+    "question": "Are you courageous?",
+    "code": "are_you_courageous",
+    "role": "researcher",
+    "score": 1,
+    "isActive": null
+  }
+]

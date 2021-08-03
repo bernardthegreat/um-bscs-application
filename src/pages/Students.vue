@@ -51,7 +51,8 @@ export default defineComponent({
           username: studentID,
           checking: true
         }
-        await this.$store.dispatch('students/students', studentInfo)
+        const students = await this.$store.dispatch('students/students', studentInfo)
+        console.log(students)
       } else {
         this.isLoggedIn = false
       }

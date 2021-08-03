@@ -9,3 +9,7 @@ export function floatingStudents (state) {
 export function studentInfo (state) {
   return state.studentInfo
 }
+
+export function wsConnection (state) {
+  return state.wsConnection
+}

@@ -12,13 +12,15 @@
               <div>
                 {{ pinned.name }}
               </div>
-              <div>
-                {{ pinned.createdDateTime }}
-              </div>
             </div>
           </q-card-section>
           <q-card-section>
             <div v-html="pinned.content">
+            </div>
+          </q-card-section>
+          <q-card-section class="bg-primary text-white">
+            <div>
+              Posted on: {{ pinned.createdDateTime }}
             </div>
           </q-card-section>
         </q-card>

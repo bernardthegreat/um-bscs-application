@@ -20,6 +20,15 @@
                         ASK QUESTION
                       </q-tooltip>
                     </q-btn>
+                    <q-btn
+                      push icon="fas fa-users"
+                      @click="openGroupingsDialog"
+                      color="green"
+                    >
+                      <q-tooltip>
+                        SHUFFLE STUDENTS
+                      </q-tooltip>
+                    </q-btn>
                   </q-btn-group>
                 </div>
               </div>
@@ -88,6 +97,35 @@
           </div>
         </div>
       </q-dialog>
+      <q-dialog v-model="groupingsDialog">
+        <div class="column">
+          <div class="row">
+            <div class="col-sm-12 col-lg-12 col-md-12 col-xs-12">
+              <q-card style="width: 500px; max-width:800px;">
+                <q-card-section class="bg-primary text-h5 text-white" align="center">
+                  GROUPINGS
+                </q-card-section>
+                <q-card-section>
+                  <q-select
+                    outlined
+                    v-model="studentRoles.finalRole"
+                    :options="roles"
+                    label="Official Role"
+                    hint=""
+                    :rules="[ val => val && val.length > 0 || 'Please enter your desired Third Role']"
+                  />
+                </q-card-section>
+                <q-card-section align="center">
+                  <q-btn push label="SHUFFLE" @click="shuffleStudents" icon="fa fa-sync" color="primary"></q-btn>
+                </q-card-section>
+                <q-inner-loading :showing="this.groupingsLoading">
+                  <q-spinner-pie size="50px" color="primary" />
+                </q-inner-loading>
+              </q-card>
+            </div>
+          </div>
+        </div>
+      </q-dialog>
     </div>
   </div>
 </template>
@@ -104,8 +142,9 @@ export default defineComponent({
   name: 'ProfessorDashboard',
   data () {
     return {
-      tab: 'floating',
+      tab: 'registered',
       loading: null,
+      groupingsLoading: null,
       columns: [
         {
           name: 'student_id',
@@ -115,11 +154,25 @@ export default defineComponent({
           sortable: true
         },
         { name: 'fullName', align: 'left', label: 'Name', field: 'fullName', sortable: true },
-        { name: 'contact_number', label: 'Contact #', field: 'contact_number', align: 'left', sortable: true },
         { name: 'question', label: 'Question', field: 'question', align: 'left', sortable: true },
-        { name: 'answer', label: 'Answer', field: 'answer', align: 'left', sortable: true }
+        { name: 'answer', label: 'Answer', field: 'answer', align: 'left', sortable: true },
+        { name: 'answerDateTime', label: 'Answer D/T', field: 'answerDateTime', align: 'left', sortable: true },
+        { name: 'first_role', label: 'Primary Role', field: 'first_role', align: 'left', sortable: true },
+        { name: 'second_role', label: 'Secondary Role', field: 'second_role', align: 'left', sortable: true },
+        { name: 'third_role', label: 'Tertiary Role', field: 'third_role', align: 'left', sortable: true },
       ],
-      questionDialog: null
+      questionDialog: null,
+      groupingsDialog: null,
+      roles: [
+        "System Analyst",
+        "UI / UX Designer",
+        "Programmer",
+        "Debugger or Tester",
+        "Researcher"
+      ],
+      studentRoles: {
+        finalRole: null
+      }
     }
   },
   computed: {
@@ -133,13 +186,20 @@ export default defineComponent({
   },
   methods: {
     async getStudents () {
-      console.log('herererere')
       this.loading = true
       await this.$store.dispatch('students/students')
       this.loading = false
     },
     askQuestion () {
       this.questionDialog = true
+    },
+    async openGroupingsDialog () {
+      this.groupingsDialog = true
+    },
+    async shuffleStudents () {
+      this.groupingsLoading = true
+      await this.$store.dispatch('survey/getShuffledStudents', this.studentRoles)
+      this.groupingsLoading = false
     }
   }
 })

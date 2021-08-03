@@ -47,6 +47,24 @@ export async function approveStudent (state, studentInfo) {
   }
 }
 
+
+export async function updateFourthRole (state, studentInfo) {
+  const response = await fetch(
+    `${this.state.students.apiUrl}students/update-fourth-role`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(studentInfo)
+    }
+  ).then((response) => response.json())
+  console.log(response)
+  return {
+    error: response.error,
+    message: response.message
+  }
+}
+
+
 export async function askQuestion (state, questionRequest) {
   const response = await fetch(
     `${this.state.students.apiUrl}announcements/ask-question`,

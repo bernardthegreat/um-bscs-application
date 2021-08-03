@@ -14,11 +14,19 @@
           UM BSCS Student Application
         </q-toolbar-title>
         <q-space></q-space>
-        <q-btn color="secondary" push
-          icon="logout" @click="logout" large
-        >
-          <div class="q-pl-sm">Logout</div>
-        </q-btn>
+        <q-btn-group>
+          <q-btn
+            icon="fas fa-sync-alt"
+            push
+            @click="reload"
+            large
+            color="secondary"
+          >
+          </q-btn>
+          <q-btn color="secondary" push
+            icon="logout" @click="logout" large
+          />
+        </q-btn-group>
       </q-toolbar>
     </q-header>
     <q-drawer
@@ -163,6 +171,9 @@ export default defineComponent({
     }
   },
   methods: {
+    reload () {
+      location.reload()
+    },
     async checkAuthentication () {
       var currentRoute = this.$router.currentRoute.value.name
       if (currentRoute === 'Professors') {

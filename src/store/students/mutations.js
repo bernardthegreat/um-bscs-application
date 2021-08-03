@@ -13,3 +13,7 @@ export function setStudentInfo (state, studentInfo) {
 export function setInitValues (state) {
   state.studentInfo = []
 }
+
+export function setWebsocketConnection (state, connection) {
+  state.wsConnection = connection
+}

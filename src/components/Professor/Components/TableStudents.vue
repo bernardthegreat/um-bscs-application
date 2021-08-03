@@ -55,14 +55,23 @@
           <q-td key="fullName" :props="props">
             {{ props.row.fullName }}
           </q-td>
-          <q-td key="contact_number" :props="props">
-            {{ props.row.contact_number }}
-          </q-td>
           <q-td key="question" :props="props">
             {{ props.row.question }}
           </q-td>
           <q-td key="answer" :props="props">
             {{ props.row.answer }}
+          </q-td>
+          <q-td key="answerDateTime" :props="props">
+            {{ props.row.answerDateTime }}
+          </q-td>
+          <q-td key="first_role" :props="props">
+            {{ props.row.first_role }}
+          </q-td>
+          <q-td key="second_role" :props="props">
+            {{ props.row.second_role }}
+          </q-td>
+          <q-td key="third_role" :props="props">
+            {{ props.row.third_role }}
           </q-td>
         </q-tr>
       </template>
@@ -204,6 +213,51 @@
                     label="Hashkey"
                     autocomplete="off"
                   />
+                  <q-input
+                    outlined
+                    square
+                    type="text"
+                    hint=""
+                    color="primary"
+                    v-model="studentInformation.firstRole"
+                    label="First Role"
+                    autocomplete="off"
+                  />
+                  <q-input
+                    outlined
+                    square
+                    type="text"
+                    hint=""
+                    color="primary"
+                    v-model="studentInformation.secondRole"
+                    label="Second Role"
+                    autocomplete="off"
+                  />
+                  <q-input
+                    outlined
+                    square
+                    type="text"
+                    hint=""
+                    color="primary"
+                    v-model="studentInformation.thirdRole"
+                    label="Third Role"
+                    autocomplete="off"
+                  />
+                  <q-select
+                    outlined
+                    v-model="studentInformation.fourthRole"
+                    :options="roles"
+                    label="Fourth Role"
+                    hint=""
+                    :rules="[ val => val && val.length > 0 || 'Please enter your desired Fourth Role']"
+                  />
+                </q-card-section>
+                <q-card-section align="center">
+                  <q-banner class="bg-orange text-white">
+                    <div v-for="(results, index) in studentInformation.roleResults" :key="index">
+                      {{ results.replace(':', ' - ').toUpperCase() }}
+                    </div>
+                  </q-banner>
                 </q-card-section>
               </q-card>
             </q-expansion-item>
@@ -293,11 +347,23 @@ export default defineComponent({
         fbLink: null,
         hashKey: null,
         birthdate: null,
-        fullName: null
+        fullName: null,
+        firstRole: null,
+        secondRole: null,
+        thirdRole: null,
+        fourthRole: null,
+        roleResults: null
       },
       studentDialog: null,
       approveLoading: null,
-      updateLoading: null
+      updateLoading: null,
+      roles: [
+        "System Analyst",
+        "UI / UX Designer",
+        "Programmer",
+        "Debugger or Tester",
+        "Researcher"
+      ],
     }
   },
   watch: {
@@ -314,6 +380,12 @@ export default defineComponent({
         this.studentInformation.hashKey = val[0].hash_key
         this.studentInformation.birthdate = val[0].birthdate
         this.studentInformation.fullName = val[0].fullName
+        this.studentInformation.firstRole = val[0].first_role
+        this.studentInformation.secondRole = val[0].second_role
+        this.studentInformation.thirdRole = val[0].third_role
+        console.log(val[0].fourth_role)
+        this.studentInformation.fourthRole = val[0].fourth_role
+        this.studentInformation.roleResults = val[0].role_results
       }
     }
   },
@@ -333,8 +405,12 @@ export default defineComponent({
         this.triggerSucccess()
       }
     },
-    updateStudent () {
-      console.log('herererere')
+    async updateStudent () {
+      this.approveLoading = true
+      const approvalStudent = await this.$store.dispatch('professors/updateFourthRole', this.studentInformation)
+      if (approvalStudent.message !== null) {
+        this.triggerSucccess()
+      }
     },
     resyncData () {
       this.$emit('getStudents')
@@ -383,7 +459,7 @@ export default defineComponent({
           icon: 'warning'
         })
       }
-    }
+    },
   }
 })
 </script>
