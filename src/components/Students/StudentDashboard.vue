@@ -432,7 +432,7 @@ export default defineComponent({
       }
     },
     studentInfo (val) {
-      console.log(val)
+      this.studentInformation.finalRole = val[0].final_role
     }
   },
   computed: {
@@ -467,17 +467,16 @@ export default defineComponent({
     // });
     this.getConfiguration()
     this.shuffleSurvey()
-    this.checkWSMessages()
     this.studentLoading = true
     setTimeout(async () => {
       await this.formatStudentInfo()
+      await this.checkWSMessages()
     }, 3500)
   },
   methods: {
     async checkWSMessages () {
       if (this.wsConnection !== null) {
         this.wsConnection.onmessage = async (data) => {
-          console.log(data)
           if (data.data === 'Ask Question') {
             this.openDialog()
           } else if (data.data === 'Close Question Dialog') {

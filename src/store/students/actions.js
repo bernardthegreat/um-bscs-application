@@ -10,6 +10,7 @@ export async function initiateWebSocket (state) {
       }
     ).then((response) => response)
     if (responseWS) {
+      console.log(`${this.state.students.exteralAPIUrl}covid-vaccination/other-ws?auth=${this.state.students.exteralAPIKey}`)
       var connection = new WebSocket(`${process.env.WS_URL}/covid-vaccination/other-ws`)
       connection.onopen = (event) => {
         console.log('Successfully connected to the websocket server...')
