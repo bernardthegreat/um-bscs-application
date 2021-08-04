@@ -112,11 +112,14 @@
                     :options="roles"
                     label="Official Role"
                     hint=""
-                    :rules="[ val => val && val.length > 0 || 'Please enter your desired Third Role']"
+                    :rules="[ val => val && val.length > 0 || 'Please enter your Official Role']"
                   />
                 </q-card-section>
                 <q-card-section align="center">
-                  <q-btn push label="SHUFFLE" @click="shuffleStudents" icon="fa fa-sync" color="primary"></q-btn>
+                  <q-btn-group>
+                    <q-btn push label="SHUFFLE" @click="shuffleStudents" icon="fa fa-sync" color="primary"></q-btn>
+                    <q-btn push label="SEND" @click="sendToWS('Role')" icon="fa fa-paper-plane" color="primary"></q-btn>
+                  </q-btn-group>
                 </q-card-section>
                 <q-inner-loading :showing="this.groupingsLoading">
                   <q-spinner-pie size="50px" color="primary" />
@@ -199,9 +202,12 @@ export default defineComponent({
     },
     async shuffleStudents () {
       this.groupingsLoading = true
-      await this.$store.dispatch('survey/getShuffledStudents', this.studentRoles)
+      const roles = await this.$store.dispatch('survey/getShuffledStudents', this.studentRoles)
+      for (var result of roles) {
+        this.sendToWS(result.studentNo)
+      }
+      // this.sendToWS(roles.studentNo)
       this.groupingsLoading = false
-      this.sendToWS('Role')
     },
     sendToWS (wsMessage) {
       this.wsConnection.send(wsMessage)

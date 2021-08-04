@@ -155,12 +155,35 @@
             >
               <q-card>
                 <q-card-section align="center">
-                  <q-banner class="bg-orange text-white">
-                    {{ this.recitationQuestion }}
-                    <div v-for="(results, index) in studentInformation.roleResults" :key="index">
-                      {{ results.replace(':', ' - ').toUpperCase() }}
+                  <div class="row items-center justify-center">
+                    <div class="col-lg-6 col-md-6">
+                      <q-card square style="height: 220px;">
+                        <q-card-section class="bg-blue-grey text-white text-h5 text-weight-thin" align="center">
+                          SURVEY RESULTS
+                        </q-card-section>
+                        <q-card-section class="items-center">
+                          <div v-for="(results, index) in studentInformation.roleResults" :key="index">
+                            {{ results.replace(':', ' - ').toUpperCase() }}
+                          </div>
+                        </q-card-section>
+                      </q-card>
                     </div>
-                  </q-banner>
+                    <div class="col-lg-6 col-md-6">
+                      <q-card square style="height: 220px;">
+                        <q-card-section class="bg-blue-grey text-white text-h5 text-weight-thin" align="center">
+                          GROUP {{ studentInformation.groupName }}
+                        </q-card-section>
+                        <q-card-section class="items-center">
+                          <div v-for="(groupMembers, index) in this.groupMates" :key="index">
+                            {{ groupMembers.last_name.toUpperCase() }}, 
+                            {{ groupMembers.first_name.toUpperCase() }} 
+                            {{ groupMembers.middle_name === null ? '' : groupMembers.middle_name.toUpperCase() }} -
+                            {{ groupMembers.final_role.toUpperCase() }}
+                          </div>
+                        </q-card-section>
+                      </q-card>
+                    </div>
+                  </div>
                 </q-card-section>
                 <q-card-section>
                   <q-input
@@ -189,11 +212,19 @@
                   />
                   <q-input
                     outlined
+                    v-model="studentInformation.fourthRole"
+                    label="Fourth Role"
+                    hint=""
+                    readonly
+                    :rules="[ val => val && val.length > 0 || 'Please enter your desired Fourth Role']"
+                  />
+                  <q-input
+                    outlined
                     v-model="studentInformation.finalRole"
                     label="Official Role"
                     hint=""
                     readonly
-                    :rules="[ val => val && val.length > 0 || 'Please enter your desired Third Role']"
+                    :rules="[ val => val && val.length > 0 || 'Please enter your desired Final Role']"
                   />
                   <!-- <q-select
                     outlined
@@ -252,16 +283,6 @@
             </q-form>
           </q-card>
         </q-dialog>
-        <q-dialog v-model="roleDialog" persistent>
-          <q-card style="width:450px;">
-            <q-card-section class="bg-green text-weight-thin text-h5" align="center">
-              CONGRATULATIONS
-            </q-card-section>
-            <q-card-section>
-              YOU ARE {{ studentInformation.finalRole}} !
-            </q-card-section>
-          </q-card>
-        </q-dialog>
         <q-dialog v-model="surveyDialog">
           <div style="width:1300px;max-width:1600px;">
             <div>
@@ -314,6 +335,22 @@
               </q-card>
             </div>
           </div>
+        </q-dialog>
+
+        <q-dialog v-model="roleDialog">
+          <q-card style="width:450px;">
+            <q-card-section class="bg-primary text-white text-h5 text-weight-thin"  align="center">
+              YOUR ROLE
+            </q-card-section>
+            <q-card-section class="text-h5 text-weight-thin" align="center">
+              <div v-if="studentInformation.finalRole !== null">
+                CONGRATULATIONS YOU ARE A {{ studentInformation.finalRole === null ? '' : studentInformation.finalRole.toUpperCase() }} !
+              </div>
+            </q-card-section>
+            <q-inner-loading :showing="this.roleLoading">
+              <q-spinner-gears size="50px" color="primary" />
+            </q-inner-loading>
+          </q-card>
         </q-dialog>
       </div>
     </div>
@@ -394,6 +431,8 @@ export default defineComponent({
       disableRecitation: null,
       enableOtherInfo: false,
       roleDialog: false,
+      roleName: null,
+      roleLoading: false,
       studentInformation: {
         studentNo: null,
         firstName: null,
@@ -408,8 +447,10 @@ export default defineComponent({
         firstRole: null,
         secondRole: null,
         thirdRole: null,
+        fourthRole: null,
         finalRole: null,
-        roleResults: null
+        roleResults: null,
+        groupName: null
       },
       questionsArray: Survey,
       surveyError: null,
@@ -431,8 +472,16 @@ export default defineComponent({
         this.cardLoading = false
       }
     },
-    studentInfo (val) {
-      this.studentInformation.finalRole = val[0].final_role
+    async roleDialog (val) {
+      if (val) {
+        this.roleLoading = true
+        await this.$emit('getStudents')
+        setTimeout(async () => {
+          await this.formatStudentInfo()
+          this.enableOtherInfo = true
+          this.roleLoading = false
+        }, 3500)
+      }
     }
   },
   computed: {
@@ -441,7 +490,8 @@ export default defineComponent({
       pinnedAnnouncements: 'announcements/pinnedAnnouncements',
       otherAnnouncements: 'announcements/otherAnnouncements',
       configurations: 'configurations/configurations',
-      wsConnection: 'students/wsConnection'
+      wsConnection: 'students/wsConnection',
+      groupMates: 'students/groupMates'
     })
   },
   async created () {
@@ -481,11 +531,9 @@ export default defineComponent({
             this.openDialog()
           } else if (data.data === 'Close Question Dialog') {
             this.recitationDialog = false
-          }else if (data.data === 'Role') {
-            this.$emit('getStudents')
-            if (this.studentInformation.finalRole !== null) {
-              this.roleDialog = true
-            }
+          } else if (data.data === this.studentInformation.studentNo) {
+            console.log('eedf')
+            this.roleDialog = true
           }
         }
       }
@@ -597,8 +645,10 @@ export default defineComponent({
         this.studentInformation.firstRole = this.studentInfo[0].first_role
         this.studentInformation.secondRole = this.studentInfo[0].second_role
         this.studentInformation.thirdRole = this.studentInfo[0].third_role
+        this.studentInformation.fourthRole = this.studentInfo[0].fourth_role
         this.studentInformation.finalRole = this.studentInfo[0].final_role
         this.studentInformation.roleResults = this.studentInfo[0].role_results
+        this.studentInformation.groupName = this.studentInfo[0].group_name
         this.studentLoading = false
         if (this.studentInfo[0].role_results !== null) {
           this.disableSurveyDialog = true

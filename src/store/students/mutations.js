@@ -10,6 +10,10 @@ export function setStudentInfo (state, studentInfo) {
   state.studentInfo = studentInfo
 }
 
+export function setGroupmates (state, groupMates) {
+  state.groupMates = groupMates
+}
+
 export function setInitValues (state) {
   state.studentInfo = []
 }

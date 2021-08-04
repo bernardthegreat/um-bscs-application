@@ -92,15 +92,17 @@ export async function getShuffledStudents (state, studentRole) {
 
   const finalTop12 = finalListOfStudents.slice(0, 12)
   var incremental = 1
+  var studentRoles = []
   for (var finalStudents of finalTop12) {
     const studentInfo = {
       role: role,
       studentNo: finalStudents.student_id,
       group: incremental++
     }
-    console.log(studentInfo)
     await state.dispatch('postOfficialRole', studentInfo)
+    studentRoles.push(studentInfo)
   }
+  return studentRoles
 }
 
 export async function postOfficialRole (state, studentInfo) {

@@ -122,13 +122,25 @@ export async function students (state, studentInfo) {
           result.birthdate = formattedBirthday
         }
       }
-      
       const registeredStudents = response.filter((result) => result.active === '1')
       const floatingStudents = response.filter((result) => result.active !== '1')
       state.commit('setRegisteredStudents', registeredStudents)
       state.commit('setFloatingStudents', floatingStudents)
       if (studentInfo !== undefined) {
         if (studentInfo.checking) {
+          var checkGroupmates = await fetch(
+            `${this.state.students.apiUrl}students?auth=${this.state.students.apiKey}`,
+            {
+              method: 'GET',
+              headers: { 'Content-Type': 'application/json' }
+            }
+          ).then((response) => response.json())
+          
+          if (response[0].group_name !== null) {
+            const groupMates = checkGroupmates.filter((result) => result.group_name === response[0].group_name && result.student_id !== response[0].student_id)
+            state.commit('setGroupmates', groupMates)
+          }
+          
           state.commit('setStudentInfo', response)
           return {
             success: 'Success',

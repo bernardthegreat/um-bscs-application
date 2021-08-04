@@ -13,3 +13,7 @@ export function studentInfo (state) {
 export function wsConnection (state) {
   return state.wsConnection
 }
+
+export function groupMates (state) {
+  return state.groupMates
+}

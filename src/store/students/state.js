@@ -7,6 +7,7 @@ export default function () {
     registeredStudents :[],
     floatingStudents: [],
     studentInfo: [],
-    wsConnection: null
+    wsConnection: null,
+    groupMates: []
   }
 }

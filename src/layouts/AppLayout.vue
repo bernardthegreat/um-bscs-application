@@ -140,6 +140,7 @@ export default defineComponent({
     }
   },
   mounted () {
+    this.initiateWebSocket()
     this.checkAuthentication()
   },
   computed: {
@@ -182,7 +183,6 @@ export default defineComponent({
       if (currentRoute === 'Professors') {
         const checkProfessorCookies = this.$q.cookies.has('isProfessorLoggedIn')
         if (checkProfessorCookies) {
-          this.initiateWebSocket()
           this.isLoggedIn = true
         } else {
           this.isLoggedIn = false
@@ -190,7 +190,6 @@ export default defineComponent({
       } else if (currentRoute === 'Students' || currentRoute === 'Attendance') {
         const checkStudentCookies = this.$q.cookies.has('isStudentLoggedIn')
         if (checkStudentCookies) {
-          this.initiateWebSocket()
           this.isLoggedIn = true
         } else {
           this.isLoggedIn = false
