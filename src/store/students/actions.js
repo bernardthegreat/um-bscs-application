@@ -1,4 +1,4 @@
-import { Cookies } from 'quasar'
+import { Cookies, LocalStorage } from 'quasar'
 export async function initiateWebSocket (state) {
   console.log('Starting connection to WebSocket Server')
   try {
@@ -165,6 +165,8 @@ export async function students (state, studentInfo) {
             state.commit('setStudentInfo', registered)
             Cookies.set('isStudentLoggedIn', true)
             Cookies.set('studentID', registered[0].student_id)
+            LocalStorage.set('isStudentLoggedIn', true)
+            LocalStorage.set('studentID', registered[0].student_id)
             return {
               success: 'Success',
               error: null
@@ -217,8 +219,9 @@ export async function answerQuestion (state, answerInfo) {
 }
 
 export async function logout (state) {
-  console.log('here')
   Cookies.remove('isStudentLoggedIn')
   Cookies.remove('studentID')
+  LocalStorage.remove('isStudentLoggedIn')
+  LocalStorage.remove('studentID')
   state.commit('setInitValues')
 }

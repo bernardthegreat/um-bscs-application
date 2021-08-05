@@ -124,8 +124,17 @@
                     label="FB Link"
                     autocomplete="off"
                   />
+                  <q-banner class="bg-cyan text-white">
+                    <template v-slot:avatar>
+                      <q-icon name="fab fa-google-drive" color="white" />
+                    </template>
+                    <div>
+                      Access your Google Drive 
+                      <a :href="studentInformation.googleDrive" target="_blank">here</a>
+                    </div>
+                  </q-banner>
                 </q-card-section>
-                <q-card-actions align="center">
+                <q-card-actions align="center" class="q-pb-md">
                   <q-btn 
                     :loading="updateLoading"
                     icon="fas fa-user-edit"
@@ -450,7 +459,8 @@ export default defineComponent({
         fourthRole: null,
         finalRole: null,
         roleResults: null,
-        groupName: null
+        groupName: null,
+        googleDrive: null
       },
       questionsArray: Survey,
       surveyError: null,
@@ -497,24 +507,6 @@ export default defineComponent({
   async created () {
     this.getAnnouncements()
     this.recitationDialog = false
-    
-    // Pusher.logToConsole = true;
-    // var pusher = new Pusher(process.env.PUSHER_KEY, {
-    //   cluster: 'ap1'
-    // });
-    // var channel = pusher.subscribe('my-channel');
-    // var self = this
-    // channel.bind('my-event', async function(data) {
-    //   if (data.message === 'recitation') {
-    //     self.recitationAnswer = null
-    //     self.recitationDialog = true
-    //   } else if (data.message === 'remove-recitation') {
-    //     self.recitationAnswer = null
-    //     self.recitationDialog = false
-    //   } else {
-    //     self.recitationDialog = false
-    //   }
-    // });
     this.getConfiguration()
     this.shuffleSurvey()
     this.studentLoading = true
@@ -532,7 +524,6 @@ export default defineComponent({
           } else if (data.data === 'Close Question Dialog') {
             this.recitationDialog = false
           } else if (data.data === this.studentInformation.studentNo) {
-            console.log('eedf')
             this.roleDialog = true
           }
         }
@@ -649,6 +640,7 @@ export default defineComponent({
         this.studentInformation.finalRole = this.studentInfo[0].final_role
         this.studentInformation.roleResults = this.studentInfo[0].role_results
         this.studentInformation.groupName = this.studentInfo[0].group_name
+        this.studentInformation.googleDrive = this.studentInfo[0].google_drive
         this.studentLoading = false
         if (this.studentInfo[0].role_results !== null) {
           this.disableSurveyDialog = true

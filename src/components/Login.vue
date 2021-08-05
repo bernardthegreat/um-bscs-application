@@ -95,7 +95,6 @@ export default defineComponent({
   props: ['role'],
   data () {
     return {
-      showRecaptcha: true,
       loginLoading: null,
       loginForm: {
         username: null,
@@ -128,21 +127,6 @@ export default defineComponent({
         console.log(error)
       }
       this.loginLoading = false
-    },
-    recaptchaVerified(response) {
-      if (response !== '') {
-        this.disableButton = false
-        this.errorMessage = null
-        return { message: 'success' }
-      } else {
-        return { message: 'error' }
-      }
-    },
-    recaptchaExpired() {
-      this.$refs.vueRecaptcha.reset();
-    },
-    recaptchaFailed() {
-      this.disableButton = true
     }
   }
 });

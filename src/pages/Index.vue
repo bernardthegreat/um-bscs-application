@@ -81,7 +81,7 @@ import OtherAnnouncements from 'src/components/Announcements/OtherAnnouncements.
 import PinnedAnnouncements from 'src/components/Announcements/PinnedAnnouncements.vue';
 import { defineComponent } from 'vue';
 import { mapGetters } from 'vuex'
-
+import { useQuasar } from 'quasar'
 export default defineComponent({
   components: { PinnedAnnouncements, OtherAnnouncements },
   name: 'PageIndex',
@@ -111,7 +111,9 @@ export default defineComponent({
     },
     async checkAuthentication () {
       this.announcementLoading = true
-      const checkCookies = this.$q.cookies.has('isStudentLoggedIn')
+      const $q = useQuasar()
+      // const checkCookies = this.$q.cookies.has('isStudentLoggedIn')
+      const checkCookies = $q.localStorage.has('isStudentLoggedIn')
       if (checkCookies) {
         this.$router.push('/students')
       } else {

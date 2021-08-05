@@ -117,7 +117,7 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import { mapGetters } from 'vuex'
-
+import { useQuasar } from 'quasar'
 
 export default defineComponent({
   name: 'AppLayout',
@@ -188,7 +188,9 @@ export default defineComponent({
           this.isLoggedIn = false
         }
       } else if (currentRoute === 'Students' || currentRoute === 'Attendance') {
-        const checkStudentCookies = this.$q.cookies.has('isStudentLoggedIn')
+        // const checkStudentCookies = this.$q.cookies.has('isStudentLoggedIn')
+        const $q = useQuasar()
+        const checkStudentCookies = $q.localStorage.has('isStudentLoggedIn')
         if (checkStudentCookies) {
           this.isLoggedIn = true
         } else {
