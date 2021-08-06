@@ -91,18 +91,12 @@ export default defineComponent({
     },
     async sendMessageRequest () {
       this.resendLoading = true
-      const wsMessage = {
-        wsMessage: 'Ask Question'
-      }
-      this.sendToWS(wsMessage.wsMessage)
+      this.sendToWS('other-ws: ask-question')
       this.resendLoading = false
     },
     async removeMessage () {
       this.removeLoading = true
-      const wsMessage = {
-        wsMessage: 'Close Question Dialog'
-      }
-      this.sendToWS(wsMessage.wsMessage)
+      this.sendToWS('other-ws: close-question-dialog')
       this.removeLoading = false
     },
     triggerSucccess () {

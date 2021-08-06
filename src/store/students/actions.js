@@ -3,15 +3,14 @@ export async function initiateWebSocket (state) {
   console.log('Starting connection to WebSocket Server')
   try {
     const responseWS = await fetch(
-      `${this.state.students.exteralAPIUrl}covid-vaccination/other-ws?auth=${this.state.students.exteralAPIKey}`,
+      `${this.state.students.exteralAPIUrl}covid-vaccination/ws?auth=${this.state.students.exteralAPIKey}`,
       {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
       }
     ).then((response) => response)
     if (responseWS) {
-      console.log(`${this.state.students.exteralAPIUrl}covid-vaccination/other-ws?auth=${this.state.students.exteralAPIKey}`)
-      var connection = new WebSocket(`${process.env.WS_URL}/covid-vaccination/other-ws`)
+      var connection = new WebSocket(`${process.env.WS_URL}/covid-vaccination/ws`)
       connection.onopen = (event) => {
         console.log('Successfully connected to the websocket server...')
       }

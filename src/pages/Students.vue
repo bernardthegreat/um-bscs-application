@@ -46,18 +46,23 @@ export default defineComponent({
     async checkAuthentication () {
       // const checkCookies = this.$q.cookies.has('isStudentLoggedIn')
       const $q = useQuasar()
-      const checkCookies = $q.localStorage.has('isStudentLoggedIn')
-      if (checkCookies) {
-        this.isLoggedIn = true
-        // const studentID = this.$q.cookies.get('studentID')
-        const studentID = $q.localStorage.getItem('studentID')
-        const studentInfo = {
-          username: studentID,
-          checking: true
+      try {
+        const checkCookies = $q.localStorage.has('isStudentLoggedIn')
+        
+        if (checkCookies) {
+          this.isLoggedIn = true
+          // const studentID = this.$q.cookies.get('studentID')
+          const studentID = $q.localStorage.getItem('studentID')
+          const studentInfo = {
+            username: studentID,
+            checking: true
+          }
+          const students = await this.$store.dispatch('students/students', studentInfo)
+        } else {
+          this.isLoggedIn = false
         }
-        const students = await this.$store.dispatch('students/students', studentInfo)
-      } else {
-        this.isLoggedIn = false
+      } catch (error) {
+        console.log(error)
       }
     }
   }

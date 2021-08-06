@@ -204,9 +204,8 @@ export default defineComponent({
       this.groupingsLoading = true
       const roles = await this.$store.dispatch('survey/getShuffledStudents', this.studentRoles)
       for (var result of roles) {
-        this.sendToWS(result.studentNo)
+        this.sendToWS(`other-ws: role-${result.studentNo}`)
       }
-      // this.sendToWS(roles.studentNo)
       this.groupingsLoading = false
     },
     sendToWS (wsMessage) {

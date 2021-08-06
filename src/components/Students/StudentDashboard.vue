@@ -519,12 +519,16 @@ export default defineComponent({
     async checkWSMessages () {
       if (this.wsConnection !== null) {
         this.wsConnection.onmessage = async (data) => {
-          if (data.data === 'Ask Question') {
-            this.openDialog()
-          } else if (data.data === 'Close Question Dialog') {
-            this.recitationDialog = false
-          } else if (data.data === this.studentInformation.studentNo) {
-            this.roleDialog = true
+          const split = data.data.split(': ')
+          console.log(split)
+          if (split[0] === 'other-ws') {
+            if (split[1] === 'ask-question') {
+              this.openDialog()
+            } else if (split[1] === 'close-question-dialog') {
+              this.recitationDialog = false
+            } else if (split[1] === `role-${this.studentInformation.studentNo}`) {
+              this.roleDialog = true
+            }
           }
         }
       }
