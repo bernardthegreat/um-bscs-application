@@ -2,9 +2,9 @@
 const routes = [
   {
     path: '/',
-    component: () => import('layouts/MainLayout.vue'),
+    component: () => import('layouts/AppLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/Index.vue') }
+      { name: 'Homepage', path: '', component: () => import('pages/Students.vue') }
     ]
   },
   {
@@ -19,7 +19,8 @@ const routes = [
     path: '/professors',
     component: () => import('layouts/AppLayout.vue'),
     children: [
-      { path: '', name: 'Professors', component: () => import('src/pages/Professors.vue') }
+      { path: '/professors', name: 'Professors', component: () => import('src/pages/Professors.vue') },
+      { path: '/professors/settings', name: 'Settings', component: () => import('src/components/Professor/Settings.vue') }
     ]
   },
 

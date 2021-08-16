@@ -29,6 +29,15 @@
                         SHUFFLE STUDENTS
                       </q-tooltip>
                     </q-btn>
+                    <q-btn
+                      push icon="fas fa-users"
+                      @click="getAllStudents"
+                      color="green"
+                    >
+                      <q-tooltip>
+                        GET STUDENTS
+                      </q-tooltip>
+                    </q-btn>
                   </q-btn-group>
                 </div>
               </div>
@@ -64,27 +73,38 @@
           </div>
         </q-card-section>
         <q-card-section>
-          <q-card>
-            <q-tabs
-              v-model="tab"
-              inline-label
-              :breakpoint="0"
-              align="justify"
-              class="bg-primary text-white shadow-2"
-            >
-              <q-tab name="registered" label="Registered Students" />
-              <q-tab name="floating" label="Floating Students" />
-            </q-tabs>
-            <q-separator />
-            <q-tab-panels v-model="tab" animated>
-              <q-tab-panel name="registered">
-                <table-students :loading="this.loading" :columns="this.columns" :studentDetails="registeredStudents" :tableTitle="'Registered Students'"></table-students>
-              </q-tab-panel>
-              <q-tab-panel name="floating">
-                <table-students @getStudents="getStudents" :loading="this.loading" :columns="this.columns" :studentDetails="floatingStudents" :tableTitle="'Floating Students'"></table-students>
-              </q-tab-panel>
-            </q-tab-panels>
-          </q-card>
+          <q-expansion-item
+            expand-separator
+            icon="fa fa-users"
+            label="STUDENTS"
+            group="somegroup"
+            default-opened
+            header-class="bg-primary text-white"
+            class="shadow-11 q-ma-md"
+            expand-icon-class="text-white"
+          >
+            <q-card>
+              <q-tabs
+                v-model="tab"
+                inline-label
+                :breakpoint="0"
+                align="justify"
+                class="bg-primary text-white shadow-2"
+              >
+                <q-tab name="registered" label="Registered Students" />
+                <q-tab name="floating" label="Floating Students" />
+              </q-tabs>
+              <q-separator />
+              <q-tab-panels v-model="tab" animated>
+                <q-tab-panel name="registered">
+                  <table-students :loading="this.loading" :columns="this.columns" :studentDetails="registeredStudents" :tableTitle="'Registered Students'"></table-students>
+                </q-tab-panel>
+                <q-tab-panel name="floating">
+                  <table-students @getStudents="getStudents" :loading="this.loading" :columns="this.columns" :studentDetails="floatingStudents" :tableTitle="'Floating Students'"></table-students>
+                </q-tab-panel>
+              </q-tab-panels>
+            </q-card>
+          </q-expansion-item>
         </q-card-section>
       </q-card>
       
@@ -118,7 +138,7 @@
                 <q-card-section align="center">
                   <q-btn-group>
                     <q-btn push label="SHUFFLE" @click="shuffleStudents" icon="fa fa-sync" color="primary"></q-btn>
-                    <q-btn push label="SEND" @click="sendToWS('Role')" icon="fa fa-paper-plane" color="primary"></q-btn>
+                    <q-btn push label="SEND" @click="sendToStudents" icon="fa fa-paper-plane" color="primary"></q-btn>
                   </q-btn-group>
                 </q-card-section>
                 <q-inner-loading :showing="this.groupingsLoading">
@@ -203,13 +223,16 @@ export default defineComponent({
     async shuffleStudents () {
       this.groupingsLoading = true
       const roles = await this.$store.dispatch('survey/getShuffledStudents', this.studentRoles)
-      for (var result of roles) {
-        this.sendToWS(`other-ws: role-${result.studentNo}`)
-      }
       this.groupingsLoading = false
+    },
+    async sendToStudents () {
+      this.sendToWS(`other-ws: show-roles`)
     },
     sendToWS (wsMessage) {
       this.wsConnection.send(wsMessage)
+    },
+    async getAllStudents () {
+      const roles = await this.$store.dispatch('students/getAllStudents')
     }
   }
 })

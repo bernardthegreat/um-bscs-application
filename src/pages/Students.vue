@@ -6,7 +6,7 @@
     <div class="row justify-center" v-if="!isLoggedIn">
       <login :role="'student'"></login>
     </div>
-    <student-dashboard v-if="isLoggedIn" :studentInfo="studentInfo" @getStudents="checkAuthentication"></student-dashboard>
+    <student-dashboard v-if="isLoggedIn" :studentInfo="studentInfo" @getStudents="checkStudents"></student-dashboard>
   </q-page>
 </template>
 
@@ -48,7 +48,7 @@ export default defineComponent({
       const $q = useQuasar()
       try {
         const checkCookies = $q.localStorage.has('isStudentLoggedIn')
-        
+        console.log(checkCookies, 'check')
         if (checkCookies) {
           this.isLoggedIn = true
           // const studentID = this.$q.cookies.get('studentID')
@@ -64,6 +64,13 @@ export default defineComponent({
       } catch (error) {
         console.log(error)
       }
+    },
+    async checkStudents () {
+      const info = {
+        username: this.studentInfo[0].student_id,
+        checking: true
+      }
+      const students = await this.$store.dispatch('students/students', info)
     }
   }
 })

@@ -10,7 +10,7 @@
               </div>
               <div>
                 <q-btn-group>
-                  <q-btn push color="secondary" @click="openDialog" icon="fa fa-hand-sparkles" v-if="!disableRecitation"></q-btn>
+                  <q-btn push color="secondary" @click="openDialog" icon="fa fa-hand-sparkles"></q-btn>
                   <q-btn push color="secondary" @click="openSurvey" icon="fa fa-poll-h" v-if="!disableSurveyDialog"></q-btn>
                 </q-btn-group>
               </div>
@@ -251,7 +251,7 @@
             <q-spinner-ball size="90px" color="primary" />
           </q-inner-loading>
         </q-card>
-        <q-dialog v-model="recitationDialog" persistent>
+        <q-dialog v-model="recitationDialog">
           <q-card style="width:450px;">
             <q-form
               @submit="submitAnswer"
@@ -282,9 +282,19 @@
                   :rules="[ val => val && val.length > 0 || 'Please enter your Answer']"
                 />
               </q-card-section>
+              <q-card-section v-if="currentAnswer !== null">
+                <q-banner class="bg-green text-white">
+                  <template v-slot:avatar>
+                    <q-icon name="fa fa-check" color="white" />
+                  </template>
+                  CURRENT ANSWER: {{ this.currentAnswer }}
+                </q-banner>
+              </q-card-section>
+              <q-card-section v-if="errorRecitation !== null">
+                {{ this.errorRecitation }}
+              </q-card-section>
               <q-card-actions align="center">
-                <q-btn type="submit" @click="submitAnswer" label="Submit Answer" color="primary" push icon="fa fa-reply">
-                </q-btn>
+                <q-btn type="submit" @click="submitAnswer" label="Submit Answer" color="primary" push icon="fa fa-reply"></q-btn>
               </q-card-actions>
               <q-inner-loading :showing="this.cardLoading">
                 <q-spinner-gears size="50px" color="primary" />
@@ -431,17 +441,19 @@ export default defineComponent({
       recitationDialog: null,
       recitationQuestion: null,
       recitationAnswer: null,
+      currentAnswer: null,
       items: [],
       cardLoading: null,
       studentLoading: null,
       updateLoading: null,
       surveyLoading: null,
       disableSurveyDialog: null,
-      disableRecitation: null,
+      disableRecitation: false,
       enableOtherInfo: false,
       roleDialog: false,
       roleName: null,
       roleLoading: false,
+      errorRecitation: null,
       studentInformation: {
         studentNo: null,
         firstName: null,
@@ -460,7 +472,8 @@ export default defineComponent({
         finalRole: null,
         roleResults: null,
         groupName: null,
-        googleDrive: null
+        googleDrive: null,
+        answer: null
       },
       questionsArray: Survey,
       surveyError: null,
@@ -477,15 +490,22 @@ export default defineComponent({
     async recitationDialog (val) {
       if (val) {
         this.cardLoading = true
-        await this.$store.dispatch('announcements/getAnnouncements')
+        // await this.$store.dispatch('announcements/getAnnouncements')
         this.recitationQuestion = this.question[0].content
+        this.currentAnswer = this.studentInformation.answer
         this.cardLoading = false
       }
     },
+    studentInfo: {
+      async handler (val) {
+        // console.log(val, 'val')
+      },
+      deep: true
+    },
     async roleDialog (val) {
       if (val) {
-        this.roleLoading = true
         await this.$emit('getStudents')
+        this.roleLoading = true
         setTimeout(async () => {
           await this.formatStudentInfo()
           this.enableOtherInfo = true
@@ -512,27 +532,27 @@ export default defineComponent({
     this.studentLoading = true
     setTimeout(async () => {
       await this.formatStudentInfo()
-      await this.checkWSMessages()
+      // await this.checkWSMessages()
     }, 3500)
   },
   methods: {
-    async checkWSMessages () {
-      if (this.wsConnection !== null) {
-        this.wsConnection.onmessage = async (data) => {
-          const split = data.data.split(': ')
-          console.log(split)
-          if (split[0] === 'other-ws') {
-            if (split[1] === 'ask-question') {
-              this.openDialog()
-            } else if (split[1] === 'close-question-dialog') {
-              this.recitationDialog = false
-            } else if (split[1] === `role-${this.studentInformation.studentNo}`) {
-              this.roleDialog = true
-            }
-          }
-        }
-      }
-    },
+    // async checkWSMessages () {
+    //   if (this.wsConnection !== null) {
+    //     this.wsConnection.onmessage = async (data) => {
+    //       const split = data.data.split(': ')
+    //       // console.log(split)
+    //       if (split[0] === 'other-ws') {
+    //         if (split[1] === 'ask-question') {
+    //           this.openDialog()
+    //         } else if (split[1] === 'close-question-dialog') {
+    //           this.recitationDialog = false
+    //         } else if (split[1] === `show-roles`) {
+    //           this.roleDialog = true
+    //         }
+    //       }
+    //     }
+    //   }
+    // },
     openDialog () {
       this.recitationDialog = true
     },
@@ -645,7 +665,11 @@ export default defineComponent({
         this.studentInformation.roleResults = this.studentInfo[0].role_results
         this.studentInformation.groupName = this.studentInfo[0].group_name
         this.studentInformation.googleDrive = this.studentInfo[0].google_drive
+        this.studentInformation.answer = this.studentInfo[0].answer
         this.studentLoading = false
+        if (this.studentInformation.finalRole !== null) {
+          this.enableOtherInfo = true
+        }
         if (this.studentInfo[0].role_results !== null) {
           this.disableSurveyDialog = true
         }
@@ -664,8 +688,12 @@ export default defineComponent({
             answer: this.recitationAnswer
           }
           const answer = await this.$store.dispatch('students/answerQuestion', answerInfo) 
-
-          this.recitationDialog = false
+          if (answer.message !== null) {
+            this.errorRecitation = null
+            this.recitationDialog = false
+          } else {
+            this.errorRecitation = answer.error
+          }
         }
       })
     },

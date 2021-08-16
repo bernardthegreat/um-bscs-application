@@ -1,7 +1,7 @@
 export async function getAnnouncements (state) {
   try {
     const response = await fetch(
-      `${this.state.students.apiUrl}announcements`,
+      `${this.state.students.apiUrl}um-announcements`,
       {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }

@@ -31,7 +31,7 @@ export async function initiateWebSocket (state) {
 
 export async function registerStudent (state, studentInfo) {
   const response = await fetch(
-    `${this.state.students.apiUrl}students/register-student`,
+    `${this.state.students.apiUrl}register-student`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -46,10 +46,11 @@ export async function registerStudent (state, studentInfo) {
 
 export async function students (state, studentInfo) {
   try {
+    console.log(`${this.state.students.apiUrl}um-students?auth=${this.state.students.apiKey}`)
     var response = ''
     if (studentInfo !== undefined) {
       response = await fetch(
-        `${this.state.students.apiUrl}students?auth=${this.state.students.apiKey}&studentNo=${studentInfo.username}`,
+        `${this.state.students.apiUrl}um-students?auth=${this.state.students.apiKey}&studentNo=${studentInfo.username}`,
         {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' }
@@ -57,7 +58,7 @@ export async function students (state, studentInfo) {
       ).then((response) => response.json())
     } else {
       response = await fetch(
-        `${this.state.students.apiUrl}students?auth=${this.state.students.apiKey}`,
+        `${this.state.students.apiUrl}um-students?auth=${this.state.students.apiKey}`,
         {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' }
@@ -68,6 +69,8 @@ export async function students (state, studentInfo) {
       for (var result of response) {
         const fullName = `${result.last_name}, ${result.first_name} ${result.middle_name === 'null' ? '' : result.middle_name}`
         result.fullName = fullName.toUpperCase()
+        const roleResults = result.role_results.split(',')
+        result.role_results = roleResults
         const formatDate = result.datetime_created
         const date = new Date(formatDate)
         const ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(date)
@@ -84,7 +87,7 @@ export async function students (state, studentInfo) {
           ampm = 'PM'
         }
         const time = `${hr}:${min} ${ampm}`
-          result.createdDateTime = `${mo} ${da}, ${ye} ${time}`
+        result.createdDateTime = `${mo} ${da}, ${ye} ${time}`
 
         try {
           if (result.answer_datetime !== null) {
@@ -121,22 +124,24 @@ export async function students (state, studentInfo) {
           result.birthdate = formattedBirthday
         }
       }
-      const registeredStudents = response.filter((result) => result.active === '1')
-      const floatingStudents = response.filter((result) => result.active !== '1')
+      const registeredStudents = response.filter((result) => result.active)
+      const floatingStudents = response.filter((result) => !result.active)
       state.commit('setRegisteredStudents', registeredStudents)
       state.commit('setFloatingStudents', floatingStudents)
       if (studentInfo !== undefined) {
         if (studentInfo.checking) {
           var checkGroupmates = await fetch(
-            `${this.state.students.apiUrl}students?auth=${this.state.students.apiKey}`,
+            `${this.state.students.apiUrl}um-students?auth=${this.state.students.apiKey}`,
             {
               method: 'GET',
               headers: { 'Content-Type': 'application/json' }
             }
           ).then((response) => response.json())
-          
+          for (var group of checkGroupmates) {
+            group.middle_name = group.middle_name === 'null' ? '' : result.middle_name
+          }
           if (response[0].group_name !== null) {
-            const groupMates = checkGroupmates.filter((result) => result.group_name === response[0].group_name && result.student_id !== response[0].student_id)
+            const groupMates = checkGroupmates.filter((result) => result.group_name === response[0].group_name)
             state.commit('setGroupmates', groupMates)
           }
           
@@ -188,7 +193,7 @@ export async function students (state, studentInfo) {
 
 export async function updateStudentProfile (state, studentProfile) {
   const response = await fetch(
-    `${this.state.students.apiUrl}students/update-student`,
+    `${this.state.students.apiUrl}update-student`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -204,7 +209,7 @@ export async function updateStudentProfile (state, studentProfile) {
 
 export async function answerQuestion (state, answerInfo) {
   const response = await fetch(
-    `${this.state.students.apiUrl}students/answer-question`,
+    `${this.state.students.apiUrl}answer-question`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -214,6 +219,27 @@ export async function answerQuestion (state, answerInfo) {
   return {
     error: response.error,
     message: response.message
+  }
+}
+
+export async function revertRecitation (state) {
+  try {
+    const response = await fetch(
+      `${this.state.students.apiUrl}revert-questions`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      }
+    ).then((response) => response.json())
+    return {
+      error: response.error,
+      message: response.message
+    }
+  } catch (error) {
+    return {
+      error: error,
+      message: null
+    }
   }
 }
 

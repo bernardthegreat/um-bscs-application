@@ -328,7 +328,7 @@ function wrapCsvValue (val, formatFn) {
   return `"${formatted}"`
 }
 export default defineComponent({
-  props: ['loading', 'studentDetails', 'tableTitle', 'columns'],
+  props: ['studentDetails', 'tableTitle', 'columns'],
   name: 'TableProfessorStudents',
   data () {
     return {
@@ -337,6 +337,7 @@ export default defineComponent({
       },
       filter: '',
       selected: [],
+      loading: null,
       studentInformation: {
         studentNo: null,
         firstName: null,
@@ -383,7 +384,6 @@ export default defineComponent({
         this.studentInformation.firstRole = val[0].first_role
         this.studentInformation.secondRole = val[0].second_role
         this.studentInformation.thirdRole = val[0].third_role
-        console.log(val[0].fourth_role)
         this.studentInformation.fourthRole = val[0].fourth_role
         this.studentInformation.roleResults = val[0].role_results
       }
@@ -412,8 +412,10 @@ export default defineComponent({
         this.triggerSucccess()
       }
     },
-    resyncData () {
-      this.$emit('getStudents')
+    async resyncData () {
+      this.loading = true
+      await this.$store.dispatch('students/students')
+      this.loading = false
     },
     triggerSucccess () {
       // we need to get the notification reference

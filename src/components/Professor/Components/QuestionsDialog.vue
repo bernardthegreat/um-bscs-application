@@ -34,7 +34,7 @@
               </template>
             </q-btn>
             <q-btn push :loading="removeLoading" icon="fa fa-times" color="red" @click="removeMessage">
-              <span class="q-pl-md">REMOVE QUESTION</span>
+              <span class="q-pl-md">REVERT RECITATION</span>
               <template v-slot:loading>
                 <q-spinner-hourglass class="on-left" />
                 LOADING ...
@@ -96,7 +96,8 @@ export default defineComponent({
     },
     async removeMessage () {
       this.removeLoading = true
-      this.sendToWS('other-ws: close-question-dialog')
+      // this.sendToWS('other-ws: close-question-dialog')
+      await this.$store.dispatch('students/revertRecitation')
       this.removeLoading = false
     },
     triggerSucccess () {

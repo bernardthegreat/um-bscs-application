@@ -48,9 +48,11 @@ module.exports = configure(function (ctx) {
     build: {
       vueRouterMode: 'hash', // available values: 'hash', 'history'
       env: {
+        API_URL: 'https://apps.uerm.edu.ph:3443/etriage/',
         // API_URL: 'http://localhost:3000/',
-        API_URL: 'https://um-rest-api.vercel.app/',
+        // API_URL: 'https://um-rest-api.vercel.app/',
         API_KEY: '54inqmZQ2GUsjioM2tQmTMF1hXBv1zzw',
+        NEW_API_URL: 'https://apps.uerm.edu.ph:3443/etriage/',
         EXTERNAL_API_URL: 'https://apps.uerm.edu.ph:3443/',
         EXTERNAL_API_KEY: 'So1DSBKffnbTKwdgIIcetg2z3GyNKeQi',
         LOCAL_API_URL: 'http://localhost:3000/',

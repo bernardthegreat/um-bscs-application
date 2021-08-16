@@ -91,18 +91,18 @@
             </q-inner-loading>
             <q-separator></q-separator>
             <q-list>
-              <q-item clickable v-ripple to="/students">
+              <q-item clickable v-ripple to="/">
                 <q-item-section avatar>
                   <q-icon color="primary" name="fas fa-user-graduate" />
                 </q-item-section>
                 <q-item-section>DASHBOARD</q-item-section>
               </q-item>
-              <q-item clickable v-ripple to="/students/attendance">
+              <!-- <q-item clickable v-ripple to="/students/attendance">
                 <q-item-section avatar>
                   <q-icon color="primary" name="fas fa-user-clock" />
                 </q-item-section>
                 <q-item-section>ATTENDANCE</q-item-section>
-              </q-item>
+              </q-item> -->
             </q-list>
           </q-card>
         </div>
@@ -180,14 +180,16 @@ export default defineComponent({
     },
     async checkAuthentication () {
       var currentRoute = this.$router.currentRoute.value.name
-      if (currentRoute === 'Professors') {
+      
+      if (currentRoute === 'Professors' || currentRoute === 'Settings') {
         const checkProfessorCookies = this.$q.cookies.has('isProfessorLoggedIn')
         if (checkProfessorCookies) {
           this.isLoggedIn = true
         } else {
           this.isLoggedIn = false
         }
-      } else if (currentRoute === 'Students' || currentRoute === 'Attendance') {
+        this.currentUser = 'Professors'
+      } else if (currentRoute === 'Homepage' || currentRoute === 'Attendance') {
         // const checkStudentCookies = this.$q.cookies.has('isStudentLoggedIn')
         const $q = useQuasar()
         const checkStudentCookies = $q.localStorage.has('isStudentLoggedIn')
@@ -196,18 +198,19 @@ export default defineComponent({
         } else {
           this.isLoggedIn = false
         }
+        this.currentUser = currentRoute
       }
-      this.currentUser = currentRoute
+      
     },
     logout () {
       var currentRoute = this.$router.currentRoute.value.name
       if (currentRoute === 'Professors') {
         this.$store.dispatch('professors/logout')
-      } else if (currentRoute === 'Students') {
+      } else if (currentRoute === 'Homepage') {
         this.$store.dispatch('students/logout')
       } else if (currentRoute === 'Attendance') {
         this.$store.dispatch('students/logout')
-        this.$router.push('/students')
+        this.$router.push('/')
       }
       this.isLoggedIn = false
     }
