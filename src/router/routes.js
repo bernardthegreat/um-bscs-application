@@ -17,10 +17,11 @@ const routes = [
 
   {
     path: '/professors',
-    component: () => import('layouts/AppLayout.vue'),
+    component: () => import('layouts/AdminLayout.vue'),
     children: [
       { path: '/professors', name: 'Professors', component: () => import('src/pages/Professors.vue') },
-      { path: '/professors/settings', name: 'Settings', component: () => import('src/components/Professor/Settings.vue') }
+      { path: '/professors/grades', name: 'Grades', component: () => import('src/components/Professor/Grading.vue') },
+      { path: '/professors/clearance', name: 'Clearance', component: () => import('src/components/Professor/Clearance.vue') }
     ]
   },
 
@@ -29,7 +30,8 @@ const routes = [
     component: () => import('layouts/AppLayout.vue'),
     children: [
       { path: '/students', name: 'Students', component: () => import('src/pages/Students.vue') },
-      { path: '/students/attendance', name: 'Attendance', component: () => import('src/components/Students/Attendance.vue') }
+      { path: '/students/attendance', name: 'Attendance', component: () => import('src/components/Students/Attendance.vue') },
+      { path: '/students/grading', name: 'Grading', component: () => import('src/components/Students/Grading.vue') },
     ]
   },
 

@@ -291,7 +291,16 @@
                 </q-banner>
               </q-card-section>
               <q-card-section v-if="errorRecitation !== null">
-                {{ this.errorRecitation }}
+                <q-banner inline-actions class="text-white bg-red">
+                  <q-icon name="fas fa-user-times" size="lg" class="q-pr-md"></q-icon>
+                  {{ this.errorRecitation }}
+                </q-banner>
+              </q-card-section>
+              <q-card-section v-if="recitationMessage !== null">
+                <q-banner inline-actions class="text-white bg-green">
+                  <q-icon name="fas fa-user-check" size="lg" class="q-pr-md"></q-icon>
+                  {{ this.recitationMessage }}
+                </q-banner>
               </q-card-section>
               <q-card-actions align="center">
                 <q-btn type="submit" @click="submitAnswer" label="Submit Answer" color="primary" push icon="fa fa-reply"></q-btn>
@@ -454,6 +463,7 @@ export default defineComponent({
       roleName: null,
       roleLoading: false,
       errorRecitation: null,
+      recitationMessage: null,
       studentInformation: {
         studentNo: null,
         firstName: null,
@@ -490,7 +500,7 @@ export default defineComponent({
     async recitationDialog (val) {
       if (val) {
         this.cardLoading = true
-        // await this.$store.dispatch('announcements/getAnnouncements')
+        await this.$store.dispatch('announcements/getAnnouncements')
         this.recitationQuestion = this.question[0].content
         this.currentAnswer = this.studentInformation.answer
         this.cardLoading = false
@@ -536,23 +546,23 @@ export default defineComponent({
     }, 3500)
   },
   methods: {
-    // async checkWSMessages () {
-    //   if (this.wsConnection !== null) {
-    //     this.wsConnection.onmessage = async (data) => {
-    //       const split = data.data.split(': ')
-    //       // console.log(split)
-    //       if (split[0] === 'other-ws') {
-    //         if (split[1] === 'ask-question') {
-    //           this.openDialog()
-    //         } else if (split[1] === 'close-question-dialog') {
-    //           this.recitationDialog = false
-    //         } else if (split[1] === `show-roles`) {
-    //           this.roleDialog = true
-    //         }
-    //       }
-    //     }
-    //   }
-    // },
+    async checkWSMessages () {
+      if (this.wsConnection !== null) {
+        this.wsConnection.onmessage = async (data) => {
+          const split = data.data.split(': ')
+          // console.log(split)
+          if (split[0] === 'other-ws') {
+            if (split[1] === 'ask-question') {
+              this.openDialog()
+            } else if (split[1] === 'close-question-dialog') {
+              this.recitationDialog = false
+            } else if (split[1] === `show-roles`) {
+              this.roleDialog = true
+            }
+          }
+        }
+      }
+    },
     openDialog () {
       this.recitationDialog = true
     },
@@ -687,13 +697,18 @@ export default defineComponent({
             question: this.recitationQuestion,
             answer: this.recitationAnswer
           }
-          const answer = await this.$store.dispatch('students/answerQuestion', answerInfo) 
-          if (answer.message !== null) {
-            this.errorRecitation = null
-            this.recitationDialog = false
-          } else {
-            this.errorRecitation = answer.error
+          
+          try {
+            const answer = await this.$store.dispatch('students/answerQuestion', answerInfo) 
+            if (answer.message !== undefined) {
+              this.errorRecitation = null
+              this.recitationMessage = 'You successfully answered the recitation'
+              this.recitationDialog = false
+            }
+          } catch (error) {
+            this.errorRecitation = error
           }
+          
         }
       })
     },

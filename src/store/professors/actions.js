@@ -34,7 +34,7 @@ export async function logout (state) {
 
 export async function approveStudent (state, studentInfo) {
   const response = await fetch(
-    `${this.state.students.apiUrl}students/approve-student`,
+    `${this.state.students.apiUrl}students/approve-student?auth=${this.state.students.apiKey}`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -46,55 +46,16 @@ export async function approveStudent (state, studentInfo) {
     message: response.message
   }
 }
-
-
-export async function updateFourthRole (state, studentInfo) {
-  const response = await fetch(
-    `${this.state.students.apiUrl}students/update-fourth-role`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(studentInfo)
-    }
-  ).then((response) => response.json())
-  console.log(response)
-  return {
-    error: response.error,
-    message: response.message
-  }
-}
-
 
 export async function askQuestion (state, questionRequest) {
   const response = await fetch(
-    `${this.state.students.apiUrl}announcements/ask-question`,
+    `${this.state.students.apiUrl}ask-question?auth=${this.state.students.apiKey}`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(questionRequest)
     }
   ).then((response) => response.json())
-  return response
-}
-
-export async function sendMessageRequest (state) {
-  const response = await fetch(
-    `${this.state.students.apiUrl}announcements/set-recitation`,
-    {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' }
-    }
-  ).then((response) => response.json())
-  return response
-}
-
-export async function removeQuestionMessage (state) {
-  const response = await fetch(
-    `${this.state.students.apiUrl}announcements/remove-question-dialog`,
-    {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' }
-    }
-  ).then((response) => response.json())
+  console.log(response)
   return response
 }

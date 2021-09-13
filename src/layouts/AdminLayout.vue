@@ -37,7 +37,7 @@
       :width="350"
       v-if="this.isLoggedIn"
     >
-      <!-- <q-list v-if="this.currentUser === 'Professors'">
+      <q-list>
         <div class="flex q-mx-md q-my-md justify-center q-ml-xs">
           <q-card square class="user-card card-border-primary" style="width:300px" color="primary">
             <q-card-section>
@@ -71,47 +71,6 @@
             </q-list>
           </q-card>
         </div>
-      </q-list> -->
-
-      <q-list>
-        <div class="flex q-mx-md q-my-md justify-center q-ml-xs">
-          <q-card square class="user-card card-border-primary" style="width:300px" color="primary">
-            <q-card-section>
-              <div class="text-overline text-center text-weight-bold">
-                {{ studentInformation.fullName }}
-              </div>
-              <div class="text-center">
-                <q-chip color="primary" size="sm" text-color="white" icon="person">
-                  STUDENT
-                </q-chip>
-              </div>
-            </q-card-section>
-            <q-inner-loading :showing="this.studentLoading">
-              <q-spinner-puff size="90px" color="primary" />
-            </q-inner-loading>
-            <q-separator></q-separator>
-            <q-list>
-              <q-item clickable v-ripple to="/">
-                <q-item-section avatar>
-                  <q-icon color="primary" name="fas fa-user-graduate" />
-                </q-item-section>
-                <q-item-section>DASHBOARD</q-item-section>
-              </q-item>
-              <!-- <q-item clickable v-ripple to="/students/attendance">
-                <q-item-section avatar>
-                  <q-icon color="primary" name="fas fa-user-clock" />
-                </q-item-section>
-                <q-item-section>ATTENDANCE</q-item-section>
-              </q-item> -->
-              <q-item clickable v-ripple to="/students/examinations">
-                <q-item-section avatar>
-                  <q-icon color="primary" name="fas fa-question-circle" />
-                </q-item-section>
-                <q-item-section>EXAMINATIONS</q-item-section>
-              </q-item>
-            </q-list>
-          </q-card>
-        </div>
       </q-list>
     </q-drawer>
     <q-page-container>
@@ -123,7 +82,6 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import { mapGetters } from 'vuex'
-import { useQuasar } from 'quasar'
 
 export default defineComponent({
   name: 'AppLayout',
@@ -185,22 +143,17 @@ export default defineComponent({
       await this.$store.dispatch('students/initiateWebSocket')
     },
     async checkAuthentication () {
-      const $q = useQuasar()
-      const checkStudentCookies = $q.localStorage.has('isStudentLoggedIn')
-      if (checkStudentCookies) {
+      const checkProfessorCookies = this.$q.cookies.has('isProfessorLoggedIn')
+      if (checkProfessorCookies) {
         this.isLoggedIn = true
       } else {
         this.isLoggedIn = false
       }
-      
     },
     logout () {
       var currentRoute = this.$router.currentRoute.value.name
-      if (currentRoute === 'Homepage' ||
-        currentRoute === 'Attendance' ||
-        currentRoute === 'Students' ||
-        currentRoute === 'Grading') {
-        this.$store.dispatch('students/logout')
+      if (currentRoute === 'Professors') {
+        this.$store.dispatch('professors/logout')
       }
       this.isLoggedIn = false
     }

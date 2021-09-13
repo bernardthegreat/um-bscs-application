@@ -88,10 +88,11 @@ export async function students (state, studentInfo) {
         }
         const time = `${hr}:${min} ${ampm}`
         result.createdDateTime = `${mo} ${da}, ${ye} ${time}`
-
+        
+        console.log(result.answer_datetime)
         try {
           if (result.answer_datetime !== null) {
-            const answerDate = result.answer_datetime
+            const answerDate = result.answer_datetime.replace(/T/, ' ').replace(/Z/, ' ')
             const ansDate = new Date(answerDate)
             const ansYear = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(ansDate)
             const ansMonth = new Intl.DateTimeFormat('en', { month: 'long' }).format(ansDate)
@@ -130,6 +131,7 @@ export async function students (state, studentInfo) {
       state.commit('setFloatingStudents', floatingStudents)
       if (studentInfo !== undefined) {
         if (studentInfo.checking) {
+          console.log(`${this.state.students.apiUrl}um-students?auth=${this.state.students.apiKey}`)
           var checkGroupmates = await fetch(
             `${this.state.students.apiUrl}um-students?auth=${this.state.students.apiKey}`,
             {
@@ -137,6 +139,7 @@ export async function students (state, studentInfo) {
               headers: { 'Content-Type': 'application/json' }
             }
           ).then((response) => response.json())
+
           for (var group of checkGroupmates) {
             group.middle_name = group.middle_name === 'null' ? '' : result.middle_name
           }
@@ -193,7 +196,7 @@ export async function students (state, studentInfo) {
 
 export async function updateStudentProfile (state, studentProfile) {
   const response = await fetch(
-    `${this.state.students.apiUrl}update-student`,
+    `${this.state.students.apiUrl}update-student?auth=${this.state.students.apiKey}`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -209,13 +212,14 @@ export async function updateStudentProfile (state, studentProfile) {
 
 export async function answerQuestion (state, answerInfo) {
   const response = await fetch(
-    `${this.state.students.apiUrl}answer-question`,
+    `${this.state.students.apiUrl}answer-question?auth=${this.state.students.apiKey}`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(answerInfo)
     }
   ).then((response) => response.json())
+  console.log(response)
   return {
     error: response.error,
     message: response.message
@@ -225,7 +229,7 @@ export async function answerQuestion (state, answerInfo) {
 export async function revertRecitation (state) {
   try {
     const response = await fetch(
-      `${this.state.students.apiUrl}revert-questions`,
+      `${this.state.students.apiUrl}revert-questions?auth=${this.state.students.apiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }

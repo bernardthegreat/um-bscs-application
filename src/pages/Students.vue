@@ -48,7 +48,6 @@ export default defineComponent({
       const $q = useQuasar()
       try {
         const checkCookies = $q.localStorage.has('isStudentLoggedIn')
-        console.log(checkCookies, 'check')
         if (checkCookies) {
           this.isLoggedIn = true
           // const studentID = this.$q.cookies.get('studentID')
@@ -58,6 +57,7 @@ export default defineComponent({
             checking: true
           }
           const students = await this.$store.dispatch('students/students', studentInfo)
+          console.log(students, 'students')
         } else {
           this.isLoggedIn = false
         }

@@ -29,15 +29,6 @@
                         SHUFFLE STUDENTS
                       </q-tooltip>
                     </q-btn>
-                    <q-btn
-                      push icon="fas fa-users"
-                      @click="getAllStudents"
-                      color="green"
-                    >
-                      <q-tooltip>
-                        GET STUDENTS
-                      </q-tooltip>
-                    </q-btn>
                   </q-btn-group>
                 </div>
               </div>
@@ -230,9 +221,6 @@ export default defineComponent({
     },
     sendToWS (wsMessage) {
       this.wsConnection.send(wsMessage)
-    },
-    async getAllStudents () {
-      const roles = await this.$store.dispatch('students/getAllStudents')
     }
   }
 })
