@@ -9,6 +9,7 @@ export default function () {
     floatingStudents: [],
     studentInfo: [],
     wsConnection: null,
-    groupMates: []
+    groupMates: [],
+    studentGrades: []
   }
 }

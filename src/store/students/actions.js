@@ -46,7 +46,6 @@ export async function registerStudent (state, studentInfo) {
 
 export async function students (state, studentInfo) {
   try {
-    console.log(`${this.state.students.apiUrl}um-students?auth=${this.state.students.apiKey}`)
     var response = ''
     if (studentInfo !== undefined) {
       response = await fetch(
@@ -88,8 +87,6 @@ export async function students (state, studentInfo) {
         }
         const time = `${hr}:${min} ${ampm}`
         result.createdDateTime = `${mo} ${da}, ${ye} ${time}`
-        
-        console.log(result.answer_datetime)
         try {
           if (result.answer_datetime !== null) {
             const answerDate = result.answer_datetime.replace(/T/, ' ').replace(/Z/, ' ')
@@ -129,9 +126,9 @@ export async function students (state, studentInfo) {
       const floatingStudents = response.filter((result) => !result.active)
       state.commit('setRegisteredStudents', registeredStudents)
       state.commit('setFloatingStudents', floatingStudents)
+      
       if (studentInfo !== undefined) {
         if (studentInfo.checking) {
-          console.log(`${this.state.students.apiUrl}um-students?auth=${this.state.students.apiKey}`)
           var checkGroupmates = await fetch(
             `${this.state.students.apiUrl}um-students?auth=${this.state.students.apiKey}`,
             {
@@ -141,7 +138,7 @@ export async function students (state, studentInfo) {
           ).then((response) => response.json())
 
           for (var group of checkGroupmates) {
-            group.middle_name = group.middle_name === 'null' ? '' : result.middle_name
+            group.middle_name = group.middle_name === 'null' ? '' : group.middle_name
           }
           if (response[0].group_name !== null) {
             const groupMates = checkGroupmates.filter((result) => result.group_name === response[0].group_name)
@@ -191,6 +188,48 @@ export async function students (state, studentInfo) {
   } catch (error) {
     return error
   }
+}
+
+
+export async function getStudentGrades (state, studentID) {
+  console.log(`${this.state.students.apiUrl}grades?auth=${this.state.students.apiKey}&student_id=${studentID}`)
+  try {
+    const response = await fetch(
+      `${this.state.students.apiUrl}grades?auth=${this.state.students.apiKey}&student_id=${studentID}`,
+      {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      }
+    ).then((response) => response.json())
+    console.log(response)
+    if (response.length > 0) {
+      state.commit('setStudentGrade', response)
+    }
+  } catch (error) {
+    console.log(error)
+    return error
+  }
+  // connection.onopen = (event) => {
+  //   console.log(event)
+  //   console.log('Successfully connected to the websocket server...')
+  // }
+}
+
+export async function saveGrades (state, grades) {
+  console.log(grades)
+  // const response = await fetch(
+  //   `${this.state.students.apiUrl}manage-grade?auth=${this.state.students.apiKey}&term=${grades.term}`,
+  //   {
+  //     method: 'POST',
+  //     headers: { 'Content-Type': 'application/json' },
+  //     body: JSON.stringify(grades)
+  //   }
+  // ).then((response) => response.json())
+  // console.log(response)
+  // return {
+  //   error: response.error,
+  //   message: response.message
+  // }
 }
 
 

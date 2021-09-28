@@ -21,3 +21,7 @@ export function setInitValues (state) {
 export function setWebsocketConnection (state, connection) {
   state.wsConnection = connection
 }
+
+export function setStudentGrade (state, studentGrades) {
+  state.studentGrades = studentGrades
+}

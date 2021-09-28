@@ -78,12 +78,6 @@
     </q-table>
     <q-dialog v-model="studentDialog" persistent>
       <q-card style="width: 900px; max-width:1500px">
-        <!-- <q-card-section class="bg-primary text-center">
-          <span class="text-left text-h5 text-white text-weight-thin">
-            <q-icon name="person"></q-icon>
-            {{ vaccineeDetails.fullName }}
-          </span>
-        </q-card-section> -->
         <q-card-section class="bg-primary">
           <div class="row justify-between">
             <div class="text-left text-h5 text-white text-weight-thin">
@@ -259,47 +253,60 @@
                     </div>
                   </q-banner>
                 </q-card-section>
+                <q-card-actions align="center">
+                  <q-btn-group>
+                    <q-btn 
+                      :loading="approveLoading"
+                      icon="fas fa-user-check"
+                      color="green"
+                      @click="approveStudent"
+                      v-if="tableTitle === 'Floating Students'"
+                      type="button"
+                    >
+                      <span class="q-pl-md">APPROVE</span>
+                      <template v-slot:loading>
+                        <q-spinner-hourglass class="on-left" />
+                        LOADING ...
+                      </template>
+                    </q-btn>
+                    <q-btn 
+                      :loading="updateLoading"
+                      icon="fas fa-user-edit"
+                      color="orange"
+                      @click="updateStudent"
+                      type="button"
+                    >
+                      <span class="q-pl-md">UPDATE</span>
+                      <template v-slot:loading>
+                        <q-spinner-hourglass class="on-left" />
+                        LOADING ...
+                      </template>
+                    </q-btn>
+                  </q-btn-group>
+                </q-card-actions>
               </q-card>
+            </q-expansion-item>
+            <q-expansion-item
+              expand-separator
+              icon="fas fa-user"
+              label="GRADING"
+              group="othergroup"
+              class="q-ma-md bg-primary text-white shadow-11"
+              dark
+            >
+              <grading :studentInformation="this.studentInformation"></grading>
             </q-expansion-item>
           </div>
         </q-card-section>
+        <q-inner-loading :showing="this.studentDialogLoading">
+          <q-spinner-gears size="50px" color="primary" />
+        </q-inner-loading>
         <!-- <q-card-section align="center" v-if="this.cardLoading" class="text-h5 text-weight-thin q-mt-xl q-pt-xl">
           LOADING DATA
         </q-card-section>
         <q-inner-loading :showing="this.cardLoading">
           <q-spinner-gears size="50px" color="primary" />
         </q-inner-loading> -->
-        <q-card-actions align="center">
-          <q-btn-group>
-            <q-btn 
-              :loading="approveLoading"
-              icon="fas fa-user-check"
-              color="green"
-              @click="approveStudent"
-              v-if="tableTitle === 'Floating Students'"
-              type="button"
-            >
-              <span class="q-pl-md">APPROVE</span>
-              <template v-slot:loading>
-                <q-spinner-hourglass class="on-left" />
-                LOADING ...
-              </template>
-            </q-btn>
-            <q-btn 
-              :loading="updateLoading"
-              icon="fas fa-user-edit"
-              color="orange"
-              @click="updateStudent"
-              type="button"
-            >
-              <span class="q-pl-md">UPDATE</span>
-              <template v-slot:loading>
-                <q-spinner-hourglass class="on-left" />
-                LOADING ...
-              </template>
-            </q-btn>
-          </q-btn-group>
-        </q-card-actions>
       </q-card>
     </q-dialog>
   </div>
@@ -327,7 +334,9 @@ function wrapCsvValue (val, formatFn) {
 
   return `"${formatted}"`
 }
+import Grading from './Grading.vue'
 export default defineComponent({
+  components: { Grading },
   props: ['studentDetails', 'tableTitle', 'columns'],
   name: 'TableProfessorStudents',
   data () {
@@ -358,6 +367,7 @@ export default defineComponent({
       studentDialog: null,
       approveLoading: null,
       updateLoading: null,
+      studentDialogLoading: null,
       roles: [
         "System Analyst",
         "UI / UX Designer",
@@ -368,9 +378,10 @@ export default defineComponent({
     }
   },
   watch: {
-    selected (val) {
+    async selected (val) {
       if (val.length > 0) {
         this.studentDialog = true
+        this.studentDialogLoading = true
         this.studentInformation.studentNo = val[0].student_id
         this.studentInformation.firstName = val[0].first_name
         this.studentInformation.middleName = val[0].middle_name
@@ -386,6 +397,8 @@ export default defineComponent({
         this.studentInformation.thirdRole = val[0].third_role
         this.studentInformation.fourthRole = val[0].fourth_role
         this.studentInformation.roleResults = val[0].role_results
+        await this.$store.dispatch('students/getStudentGrades', this.studentInformation.studentNo)
+        this.studentDialogLoading = false
       }
     }
   },

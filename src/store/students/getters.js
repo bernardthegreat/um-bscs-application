@@ -17,3 +17,7 @@ export function wsConnection (state) {
 export function groupMates (state) {
   return state.groupMates
 }
+
+export function studentGrades (state) {
+  return state.studentGrades
+}

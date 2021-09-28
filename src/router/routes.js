@@ -20,7 +20,6 @@ const routes = [
     component: () => import('layouts/AdminLayout.vue'),
     children: [
       { path: '/professors', name: 'Professors', component: () => import('src/pages/Professors.vue') },
-      { path: '/professors/grades', name: 'Grades', component: () => import('src/components/Professor/Grading.vue') },
       { path: '/professors/clearance', name: 'Clearance', component: () => import('src/components/Professor/Clearance.vue') }
     ]
   },
