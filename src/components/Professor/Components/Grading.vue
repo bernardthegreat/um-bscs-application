@@ -22,6 +22,8 @@
                   v-model="prelimGrades.prelimQuizItems"
                   label="Prelim Quiz Items"
                   autocomplete="off"
+                  :rules="[ val => val && val.length > 0 || 'Please enter Quiz Items']"
+                  ref="prelimQuizItems"
                 />
                 <q-input
                   outlined
@@ -32,6 +34,8 @@
                   v-model="prelimGrades.prelimQuiz"
                   label="Prelim Quiz"
                   autocomplete="off"
+                  :rules="[ val => val && val.length > 0 || 'Please enter Quiz Score']"
+                  ref="prelimQuizScore"
                 />
                 <q-input
                   outlined
@@ -42,6 +46,8 @@
                   v-model="prelimGrades.prelimExamItems"
                   label="Prelim Exam Items"
                   autocomplete="off"
+                  :rules="[ val => val && val.length > 0 || 'Please enter Exam Items']"
+                  ref="prelimExamItems"
                 />
                 <q-input
                   outlined
@@ -52,6 +58,8 @@
                   v-model="prelimGrades.prelimExam"
                   label="Prelim Exam"
                   autocomplete="off"
+                  :rules="[ val => val && val.length > 0 || 'Please enter Exam Score']"
+                  ref="prelimExamScore"
                 />
               </div>
               <div class="col-6">
@@ -86,6 +94,8 @@
                   v-model="prelimGrades.prelimClassStanding"
                   label="Prelim Class Standing"
                   autocomplete="off"
+                  :rules="[ val => val && val.length > 0 || 'Please enter Class Standing']"
+                  ref="prelimClassStanding"
                 />
                 <q-input
                   outlined
@@ -562,16 +572,58 @@ export default defineComponent({
       }
     },
     async submitGrade (term) {
+      
+      const overallGrades = {
+        prelimQuiz: this.prelimGrades.prelimQuiz,
+        prelimQuizItems: this.prelimGrades.prelimQuizItems,
+        prelimQuizAverage: this.prelimGrades.prelimQuizAverage,
+        prelimExam: this.prelimGrades.prelimExam,
+        prelimExamItems: this.prelimGrades.prelimExamItems,
+        prelimExamAverage: this.prelimGrades.prelimExamAverage,
+        prelimClassStanding: this.prelimGrades.prelimClassStanding,
+        prelimGrade: this.prelimGrades.prelimGrade,
+        prelimRemarks: this.prelimGrades.prelimRemarks,
+        prelimStatus: this.prelimGrades.prelimStatus,
+        midtermQuiz: this.midtermGrades.midtermQuiz,
+        midtermQuizItems: this.midtermGrades.midtermQuizItems,
+        midtermQuizAverage: this.midtermGrades.midtermQuizAverage,
+        midtermExam: this.midtermGrades.midtermExam,
+        midtermExamItems: this.midtermGrades.midtermExamItems,
+        midtermExamAverage: this.midtermGrades.midtermExamAverage,
+        midtermClassStanding: this.midtermGrades.midtermClassStanding,
+        midtermGrade: this.midtermGrades.midtermGrade,
+        midtermRemarks: this.midtermGrades.midtermRemarks,
+        midtermStatus: this.midtermGrades.midtermStatus,
+        finalQuiz: this.finalGrades.finalQuiz,
+        finalQuizItems: this.finalGrades.finalQuizItems,
+        finalQuizAverage: this.finalGrades.finalQuizAverage,
+        finalExam: this.finalGrades.finalExam,
+        finalExamItems: this.finalGrades.finalExamItems,
+        finalExamAverage: this.finalGrades.finalExamAverage,
+        finalClassStanding: this.finalGrades.finalClassStanding,
+        finalGrade: this.finalGrades.finalGrade,
+        finalRemarks: this.finalGrades.finalRemarks,
+        finalStatus: this.finalGrades.finalStatus,
+        finalOverallGrade: this.finalGrades.finalOverallGrade,
+        studentID: this.studentInformation.studentNo
+      }
+      
       if (term === 'prelim') {
-        console.log(this.studentInformation)
-        this.prelimGrades.student_id = this.studentInformation.studentNo
-        await this.$store.dispatch('students/saveGrades', this.prelimGrades)
+        const prelimQuizItems = this.$refs.prelimQuizItems.validate()
+        const prelimQuizScore = this.$refs.prelimQuizScore.validate()
+        const prelimExamItems = this.$refs.prelimExamItems.validate()
+        const prelimExamScore = this.$refs.prelimExamScore.validate()
+        const prelimClassStanding = this.$refs.prelimClassStanding.validate()
+        if (prelimQuizItems && prelimQuizScore && prelimExamItems && prelimExamScore && prelimClassStanding) {
+          
+          await this.$store.dispatch('students/saveGrades', overallGrades)
+        }
       } else if (term === 'midterm') {
         this.midtermGrades.student_id = this.studentInformation.studentNo
-        await this.$store.dispatch('students/saveGrades', this.midtermGrades)
+        await this.$store.dispatch('students/saveGrades', overallGrades)
       } else {
         this.finalGrades.student_id = this.studentInformation.studentNo
-        await this.$store.dispatch('students/saveGrades', this.finalGrades)
+        await this.$store.dispatch('students/saveGrades', overallGrades)
       }
     },
   }

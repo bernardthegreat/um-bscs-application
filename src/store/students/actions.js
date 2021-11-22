@@ -217,19 +217,19 @@ export async function getStudentGrades (state, studentID) {
 
 export async function saveGrades (state, grades) {
   console.log(grades)
-  // const response = await fetch(
-  //   `${this.state.students.apiUrl}manage-grade?auth=${this.state.students.apiKey}&term=${grades.term}`,
-  //   {
-  //     method: 'POST',
-  //     headers: { 'Content-Type': 'application/json' },
-  //     body: JSON.stringify(grades)
-  //   }
-  // ).then((response) => response.json())
-  // console.log(response)
-  // return {
-  //   error: response.error,
-  //   message: response.message
-  // }
+  const response = await fetch(
+    `${this.state.students.apiUrl}manage-grade?auth=${this.state.students.apiKey}&term=${grades.term}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(grades)
+    }
+  ).then((response) => response.json())
+  console.log(response)
+  return {
+    error: response.error,
+    message: response.message
+  }
 }
 
 
