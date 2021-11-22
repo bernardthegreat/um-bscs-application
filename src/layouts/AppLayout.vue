@@ -109,6 +109,12 @@
                 </q-item-section>
                 <q-item-section>EXAMINATIONS</q-item-section>
               </q-item>
+              <q-item clickable v-ripple to="/students/grading">
+                <q-item-section avatar>
+                  <q-icon color="primary" name="fas fa-graduation-cap" />
+                </q-item-section>
+                <q-item-section>GRADES</q-item-section>
+              </q-item>
             </q-list>
           </q-card>
         </div>

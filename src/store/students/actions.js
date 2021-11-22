@@ -192,7 +192,6 @@ export async function students (state, studentInfo) {
 
 
 export async function getStudentGrades (state, studentID) {
-  console.log(`${this.state.students.apiUrl}grades?auth=${this.state.students.apiKey}&student_id=${studentID}`)
   try {
     const response = await fetch(
       `${this.state.students.apiUrl}grades?auth=${this.state.students.apiKey}&student_id=${studentID}`,
@@ -228,7 +227,7 @@ export async function saveGrades (state, grades) {
   console.log(response)
   return {
     error: response.error,
-    message: response.message
+    success: response.success
   }
 }
 

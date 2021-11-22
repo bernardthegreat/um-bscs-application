@@ -126,7 +126,7 @@
           </q-card-section>
           <q-card-actions align="center">
             <q-btn 
-              :loading="prelimLoading"
+              :loading="gradeLoading"
               icon="fas fa-user-edit"
               color="orange"
               @click="submitGrade('prelim')"
@@ -162,6 +162,8 @@
                   v-model="midtermGrades.midtermQuizItems"
                   label="Midterm Quiz Items"
                   autocomplete="off"
+                  :rules="[ val => val && val.length > 0 || 'Please enter Quiz Items']"
+                  ref="midtermQuizItems"
                 />
                 <q-input
                   outlined
@@ -172,6 +174,8 @@
                   v-model="midtermGrades.midtermQuiz"
                   label="Midterm Quiz"
                   autocomplete="off"
+                  :rules="[ val => val && val.length > 0 || 'Please enter Quiz Score']"
+                  ref="midtermQuizScore"
                 />
                 <q-input
                   outlined
@@ -182,6 +186,8 @@
                   v-model="midtermGrades.midtermExamItems"
                   label="Midterm Exam Items"
                   autocomplete="off"
+                  :rules="[ val => val && val.length > 0 || 'Please enter Exam Items']"
+                  ref="midtermExamItems"
                 />
                 <q-input
                   outlined
@@ -192,6 +198,8 @@
                   v-model="midtermGrades.midtermExam"
                   label="Midterm Exam"
                   autocomplete="off"
+                  :rules="[ val => val && val.length > 0 || 'Please enter Exam Score']"
+                  ref="midtermExamScore"
                 />
               </div>
               <div class="col-6">
@@ -226,6 +234,8 @@
                   v-model="midtermGrades.midtermClassStanding"
                   label="Midterm Class Standing"
                   autocomplete="off"
+                  :rules="[ val => val && val.length > 0 || 'Please enter Class Standing']"
+                  ref="midtermClassStanding"
                 />
                 <q-input
                   outlined
@@ -256,7 +266,7 @@
           </q-card-section>
           <q-card-actions align="center">
             <q-btn 
-              :loading="midtermLoading"
+              :loading="gradeLoading"
               icon="fas fa-user-edit"
               color="orange"
               @click="submitGrade('midterm')"
@@ -292,6 +302,8 @@
                   v-model="finalGrades.finalQuizItems"
                   label="Final Quiz Items"
                   autocomplete="off"
+                  :rules="[ val => val && val.length > 0 || 'Please enter Quiz Items']"
+                  ref="finalQuizItems"
                 />
                 <q-input
                   outlined
@@ -302,6 +314,8 @@
                   v-model="finalGrades.finalQuiz"
                   label="Final Quiz"
                   autocomplete="off"
+                  :rules="[ val => val && val.length > 0 || 'Please enter Quiz Score']"
+                  ref="finalQuizScore"
                 />
                 <q-input
                   outlined
@@ -312,6 +326,8 @@
                   v-model="finalGrades.finalExamItems"
                   label="Final Exam Items"
                   autocomplete="off"
+                  :rules="[ val => val && val.length > 0 || 'Please enter Exam Items']"
+                  ref="finalExamItems"
                 />
                 <q-input
                   outlined
@@ -322,6 +338,8 @@
                   v-model="finalGrades.finalExam"
                   label="Final Exam"
                   autocomplete="off"
+                  :rules="[ val => val && val.length > 0 || 'Please enter Exam Score']"
+                  ref="finalExamScore"
                 />
               </div>
               <div class="col-6">
@@ -356,6 +374,8 @@
                   v-model="finalGrades.finalClassStanding"
                   label="Final Class Standing"
                   autocomplete="off"
+                  :rules="[ val => val && val.length > 0 || 'Please enter Class Standing']"
+                  ref="finalClassStanding"
                 />
                 <q-input
                   outlined
@@ -389,7 +409,7 @@
           </q-card-section>
           <q-card-actions align="center">
             <q-btn 
-              :loading="finalLoading"
+              :loading="gradeLoading"
               icon="fas fa-user-edit"
               color="orange"
               @click="submitGrade('finals')"
@@ -430,7 +450,6 @@ export default defineComponent({
         prelimStatus: null,
         term: 'prelim'
       },
-      prelimLoading: null,
       midtermGrades: {
         midtermQuiz: null,
         midtermQuizItems: null,
@@ -444,7 +463,6 @@ export default defineComponent({
         midtermStatus: null,
         term: 'mditerm'
       },
-      midtermLoading: null,
       finalGrades: {
         finalQuiz: null,
         finalQuizItems: null,
@@ -459,7 +477,7 @@ export default defineComponent({
         finalOverallGrade: null,
         term: 'finals'
       },
-      finalLoading: null
+      gradeLoading: null
     }
   },
   watch: {
@@ -469,12 +487,14 @@ export default defineComponent({
     prelimGrades: {
       async handler (val) {
         this.formatPrelimGrade(val)
+        this.formatFinalGrade(this.finalGrades)
       },
       deep: true
     },
     midtermGrades: {
       async handler (val) {
         this.formatMidtermGrade(val)
+        this.formatFinalGrade(this.finalGrades)
       },
       deep: true
     },
@@ -572,34 +592,27 @@ export default defineComponent({
       }
     },
     async submitGrade (term) {
-      
+      this.gradeLoading = true
       const overallGrades = {
         prelimQuiz: this.prelimGrades.prelimQuiz,
         prelimQuizItems: this.prelimGrades.prelimQuizItems,
-        prelimQuizAverage: this.prelimGrades.prelimQuizAverage,
         prelimExam: this.prelimGrades.prelimExam,
         prelimExamItems: this.prelimGrades.prelimExamItems,
-        prelimExamAverage: this.prelimGrades.prelimExamAverage,
         prelimClassStanding: this.prelimGrades.prelimClassStanding,
         prelimGrade: this.prelimGrades.prelimGrade,
         prelimRemarks: this.prelimGrades.prelimRemarks,
-        prelimStatus: this.prelimGrades.prelimStatus,
         midtermQuiz: this.midtermGrades.midtermQuiz,
         midtermQuizItems: this.midtermGrades.midtermQuizItems,
         midtermQuizAverage: this.midtermGrades.midtermQuizAverage,
         midtermExam: this.midtermGrades.midtermExam,
         midtermExamItems: this.midtermGrades.midtermExamItems,
-        midtermExamAverage: this.midtermGrades.midtermExamAverage,
         midtermClassStanding: this.midtermGrades.midtermClassStanding,
         midtermGrade: this.midtermGrades.midtermGrade,
         midtermRemarks: this.midtermGrades.midtermRemarks,
-        midtermStatus: this.midtermGrades.midtermStatus,
         finalQuiz: this.finalGrades.finalQuiz,
         finalQuizItems: this.finalGrades.finalQuizItems,
-        finalQuizAverage: this.finalGrades.finalQuizAverage,
         finalExam: this.finalGrades.finalExam,
         finalExamItems: this.finalGrades.finalExamItems,
-        finalExamAverage: this.finalGrades.finalExamAverage,
         finalClassStanding: this.finalGrades.finalClassStanding,
         finalGrade: this.finalGrades.finalGrade,
         finalRemarks: this.finalGrades.finalRemarks,
@@ -608,6 +621,7 @@ export default defineComponent({
         studentID: this.studentInformation.studentNo
       }
       
+      var saveStatus = null
       if (term === 'prelim') {
         const prelimQuizItems = this.$refs.prelimQuizItems.validate()
         const prelimQuizScore = this.$refs.prelimQuizScore.validate()
@@ -615,16 +629,52 @@ export default defineComponent({
         const prelimExamScore = this.$refs.prelimExamScore.validate()
         const prelimClassStanding = this.$refs.prelimClassStanding.validate()
         if (prelimQuizItems && prelimQuizScore && prelimExamItems && prelimExamScore && prelimClassStanding) {
-          
-          await this.$store.dispatch('students/saveGrades', overallGrades)
+          saveStatus = await this.$store.dispatch('students/saveGrades', overallGrades)
         }
       } else if (term === 'midterm') {
-        this.midtermGrades.student_id = this.studentInformation.studentNo
-        await this.$store.dispatch('students/saveGrades', overallGrades)
+        const midtermQuizItems = this.$refs.midtermQuizItems.validate()
+        const midtermQuizScore = this.$refs.midtermQuizScore.validate()
+        const midtermExamItems = this.$refs.midtermExamItems.validate()
+        const midtermExamScore = this.$refs.midtermExamScore.validate()
+        const midtermClassStanding = this.$refs.midtermClassStanding.validate()
+        if (midtermQuizItems && midtermQuizScore && midtermExamItems && midtermExamScore && midtermClassStanding) {
+          saveStatus = await this.$store.dispatch('students/saveGrades', overallGrades)
+        }
+        saveStatus = await this.$store.dispatch('students/saveGrades', overallGrades)
       } else {
-        this.finalGrades.student_id = this.studentInformation.studentNo
-        await this.$store.dispatch('students/saveGrades', overallGrades)
+        const finalQuizItems = this.$refs.finalQuizItems.validate()
+        const finalQuizScore = this.$refs.finalQuizScore.validate()
+        const finalExamItems = this.$refs.finalExamItems.validate()
+        const finalExamScore = this.$refs.finalExamScore.validate()
+        const finalClassStanding = this.$refs.finalClassStanding.validate()
+        if (finalQuizItems && finalQuizScore && finalExamItems && finalExamScore && finalClassStanding) {
+          saveStatus = await this.$store.dispatch('students/saveGrades', overallGrades)
+        }
       }
+
+      if (saveStatus.success) {
+        await this.triggerSucccess(term)
+      }
+      this.gradeLoading = false
+    },
+    triggerSucccess (term) {
+      // we need to get the notification reference
+      // otherwise it will never get dismissed ('ongoing' type has timeout 0)
+      const notif = this.$q.notify({
+        type: 'ongoing',
+        message: 'PROCESSING GRADE...'
+      })
+
+      // simulate delay
+      setTimeout(() => {
+        notif({
+          type: 'positive',
+          message: `${term.toUpperCase()} GRADE SAVED`,
+          timeout: 1000
+        })
+        this.questionsLoading = false
+        this.question = null
+      }, 3000)
     },
   }
 })
