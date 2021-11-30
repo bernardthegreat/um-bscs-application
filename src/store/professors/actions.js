@@ -59,3 +59,35 @@ export async function askQuestion (state, questionRequest) {
   console.log(response)
   return response
 }
+
+export async function getAllGrades (state) {
+  try {
+    const response = await fetch(
+      `${this.state.students.apiUrl}grades?auth=${this.state.students.apiKey}`,
+      {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      }
+    ).then((response) => response.json())
+    console.log(response)
+    if (response.length > 0) {
+      const students = this.state.students.registeredStudents
+      var studentGrades = []
+      for (var result of response) {
+        for (var studentInfo of students) {
+          const gradesStudents = response.filter((result) => result.student_id = studentInfo.student_id)
+          const grades = {
+            studentInfo: result,
+            grades: gradesStudents
+          }
+          studentGrades = grades
+        }
+      }
+      console.log(studentGrades)
+      // state.commit('setAllGrades', response)
+    }
+  } catch (error) {
+    console.log(error)
+    return error
+  }
+}

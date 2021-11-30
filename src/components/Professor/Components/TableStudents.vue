@@ -400,6 +400,11 @@ export default defineComponent({
         await this.$store.dispatch('students/getStudentGrades', this.studentInformation.studentNo)
         this.studentDialogLoading = false
       }
+    },
+    studentDetails (val) {
+      if (val.length > 0) {
+        this.getGrades()
+      }
     }
   },
   methods: {
@@ -449,6 +454,9 @@ export default defineComponent({
         this.closeDialog()
         this.resyncData()
       }, 3000)
+    },
+    async getGrades () {
+      await this.$store.dispatch('professors/getAllGrades')
     },
     exportTable () {
       // naive encoding to csv format

@@ -72,7 +72,7 @@
                       </q-card-section>
                     </q-card>
                   </q-card-section>
-                  <q-card-section>
+                  <!-- <q-card-section>
                     <q-card>
                       <q-card-section align="center" class="text-overline bg-light-blue text-white">
                         PRELIM REMARKS
@@ -85,7 +85,7 @@
                         </div>
                       </q-card-section>
                     </q-card>
-                  </q-card-section>
+                  </q-card-section> -->
                 </q-expansion-item>
 
                 <q-expansion-item
@@ -145,7 +145,7 @@
                       </q-card-section>
                     </q-card>
                   </q-card-section>
-                  <q-card-section>
+                  <!-- <q-card-section>
                     <q-card>
                       <q-card-section align="center" class="text-overline bg-cyan text-white">
                         MIDTERM REMARKS
@@ -158,7 +158,7 @@
                         </div>
                       </q-card-section>
                     </q-card>
-                  </q-card-section>
+                  </q-card-section> -->
                 </q-expansion-item>
 
                 <q-expansion-item
@@ -217,20 +217,6 @@
                       </q-card-section>
                     </q-card>
                   </q-card-section>
-                  <q-card-section>
-                    <q-card>
-                      <q-card-section align="center" class="text-overline bg-teal text-white">
-                        FINAL REMARKS
-                      </q-card-section>
-                      <q-card-section>
-                        <div class="row text-center">
-                          <div class="col-12">
-                            {{ gradingInfo.finalRemarks }}
-                          </div>
-                        </div>
-                      </q-card-section>
-                    </q-card>
-                  </q-card-section>
                 </q-expansion-item>
 
                 <q-expansion-item
@@ -250,6 +236,20 @@
                       <q-card-section align="center">
                         <div class="col-12 text-h3 q-pa-lg">
                           {{ gradingInfo.overallGrade }}
+                        </div>
+                      </q-card-section>
+                    </q-card>
+                  </q-card-section>
+                  <q-card-section>
+                    <q-card>
+                      <q-card-section align="center" class="text-overline bg-green text-white">
+                        FINAL REMARKS
+                      </q-card-section>
+                      <q-card-section>
+                        <div class="row text-center">
+                          <div class="col-12">
+                            {{ gradingInfo.finalRemarks }}
+                          </div>
                         </div>
                       </q-card-section>
                     </q-card>
