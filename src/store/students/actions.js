@@ -194,7 +194,7 @@ export async function students (state, studentInfo) {
 export async function getStudentGrades (state, studentID) {
   try {
     const response = await fetch(
-      `${this.state.students.apiUrl}grades?auth=${this.state.students.apiKey}&student_id=${studentID}`,
+      `${this.state.students.apiUrl}grades?auth=${this.state.students.apiKey}&studentNo=${studentID}`,
       {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }

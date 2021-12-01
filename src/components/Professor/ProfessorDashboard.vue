@@ -88,7 +88,7 @@
               <q-separator />
               <q-tab-panels v-model="tab" animated>
                 <q-tab-panel name="registered">
-                  <table-students :loading="this.loading" :columns="this.columns" :studentDetails="registeredStudents" :tableTitle="'Registered Students'"></table-students>
+                  <table-students :loading="this.loading" :columns="this.columns" :studentDetails="registeredStudents" :allGrades="allGrades" :tableTitle="'Registered Students'"></table-students>
                 </q-tab-panel>
                 <q-tab-panel name="floating">
                   <table-students @getStudents="getStudents" :loading="this.loading" :columns="this.columns" :studentDetails="floatingStudents" :tableTitle="'Floating Students'"></table-students>
@@ -193,7 +193,8 @@ export default defineComponent({
     ...mapGetters({
       registeredStudents: 'students/registeredStudents',
       floatingStudents: 'students/floatingStudents',
-      wsConnection: 'students/wsConnection'
+      wsConnection: 'students/wsConnection',
+      allGrades: 'professors/allGrades'
     })
   },
   async mounted () {

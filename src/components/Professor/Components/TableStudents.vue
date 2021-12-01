@@ -33,6 +33,12 @@
               no-caps
               @click="exportTable"
             />
+            <q-btn
+              color="primary"
+              icon-right="fa fa-download"
+              no-caps
+              @click="exportGrades"
+            />
           </q-btn-group>
           <q-input dense debounce="300" v-model="filter" placeholder="Search">
             <template v-slot:append>
@@ -337,7 +343,7 @@ function wrapCsvValue (val, formatFn) {
 import Grading from './Grading.vue'
 export default defineComponent({
   components: { Grading },
-  props: ['studentDetails', 'tableTitle', 'columns'],
+  props: ['studentDetails', 'tableTitle', 'columns', 'allGrades'],
   name: 'TableProfessorStudents',
   data () {
     return {
@@ -375,6 +381,18 @@ export default defineComponent({
         "Debugger or Tester",
         "Researcher"
       ],
+      gradesColums: [
+        {
+          name: 'fullName',
+          label: 'Student Name',
+          align: 'left',
+          field: 'fullName',
+          sortable: true
+        },
+        { name: 'prelim', align: 'left', label: 'Prelim', field: 'prelim', sortable: true },
+        { name: 'midterm', label: 'Midterm', field: 'midterm', align: 'left', sortable: true },
+        { name: 'class_standing', label: 'Class Standing', field: 'class_standing', align: 'left', sortable: true }
+      ]
     }
   },
   watch: {
@@ -457,6 +475,42 @@ export default defineComponent({
     },
     async getGrades () {
       await this.$store.dispatch('professors/getAllGrades')
+    },
+    exportGrades () {
+      // naive encoding to csv format
+      var grades = []
+      for (var result of this.allGrades) {
+        const studentGrades = {
+          fullName: result.studentInfo.fullName,
+          prelim: Math.round(Number(result.grades.prelim_grade)),
+          midterm: Math.round(Number(result.grades.midterm_grade)),
+          class_standing: Math.round(Number(result.grades.final_overall_grade))
+        }
+        grades.push(studentGrades)
+      }
+      console.log(grades)
+      const content = [this.gradesColums.map(col => wrapCsvValue(col.label))].concat(
+        grades.map(row => this.gradesColums.map(col => wrapCsvValue(
+          typeof col.field === 'function'
+            ? col.field(row)
+            : row[ col.field === void 0 ? col.name : col.field ],
+          col.format
+        )).join(','))
+      ).join('\r\n')
+
+      const status = exportFile(
+        'Students.csv',
+        content,
+        'text/csv'
+      )
+
+      if (status !== true) {
+        $q.notify({
+          message: 'Browser denied file download...',
+          color: 'negative',
+          icon: 'warning'
+        })
+      }
     },
     exportTable () {
       // naive encoding to csv format

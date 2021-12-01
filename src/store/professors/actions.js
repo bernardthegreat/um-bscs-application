@@ -73,18 +73,26 @@ export async function getAllGrades (state) {
     if (response.length > 0) {
       const students = this.state.students.registeredStudents
       var studentGrades = []
-      for (var result of response) {
-        for (var studentInfo of students) {
-          const gradesStudents = response.filter((result) => result.student_id = studentInfo.student_id)
-          const grades = {
-            studentInfo: result,
-            grades: gradesStudents
+      for (var studentInfo of students) {
+        for (var result of response) {
+          if (result.student_id === studentInfo.student_id) {
+            const grades = {
+              studentInfo: studentInfo,
+              grades: result
+            }
+            console.log(grades)
+            studentGrades.push(grades)
           }
-          studentGrades = grades
         }
+        // const gradesStudents = response.filter((result) => result.student_id = studentInfo.student_id)
+        // const grades = {
+        //   studentInfo: result,
+        //   grades: gradesStudents
+        // }
+        // studentGrades = grades
       }
       console.log(studentGrades)
-      // state.commit('setAllGrades', response)
+      state.commit('setAllGrades', studentGrades)
     }
   } catch (error) {
     console.log(error)
