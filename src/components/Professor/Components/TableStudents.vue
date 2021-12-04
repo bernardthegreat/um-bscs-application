@@ -481,7 +481,7 @@ export default defineComponent({
       var grades = []
       for (var result of this.allGrades) {
         const studentGrades = {
-          fullName: result.studentInfo.fullName,
+          fullName: `${result.studentInfo.last_name}, ${result.studentInfo.first_name}`,
           prelim: Math.round(Number(result.grades.prelim_grade)),
           midterm: Math.round(Number(result.grades.midterm_grade)),
           class_standing: Math.round(Number(result.grades.final_overall_grade))
