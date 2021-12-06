@@ -21,7 +21,7 @@
             <q-btn
               push icon="fas fa-sync-alt"
               @click="resyncData"
-              color="green"
+              color="orange"
             >
               <q-tooltip>
                 RETRIEVE DATA
@@ -32,13 +32,21 @@
               icon-right="fa fa-download"
               no-caps
               @click="exportTable"
-            />
+            >
+              <q-tooltip>
+                DOWNLOAD RECITATION AND ATTENDANCE
+              </q-tooltip>
+            </q-btn>
             <q-btn
-              color="primary"
-              icon-right="fa fa-download"
+              color="green"
+              icon-right="fa fa-file-excel"
               no-caps
               @click="exportGrades"
-            />
+            >
+              <q-tooltip>
+                DOWNLOAD GRADES
+              </q-tooltip>
+            </q-btn>
           </q-btn-group>
           <q-input dense debounce="300" v-model="filter" placeholder="Search">
             <template v-slot:append>
@@ -480,8 +488,9 @@ export default defineComponent({
       // naive encoding to csv format
       var grades = []
       for (var result of this.allGrades) {
+        const middleName = result.studentInfo.middle_name !== '' ? `${result.studentInfo.middle_name.charAt(0)}.` : ''
         const studentGrades = {
-          fullName: `${result.studentInfo.last_name}, ${result.studentInfo.first_name}`,
+          fullName: `${result.studentInfo.last_name}, ${result.studentInfo.first_name} ${middleName}`,
           prelim: Math.round(Number(result.grades.prelim_grade)),
           midterm: Math.round(Number(result.grades.midterm_grade)),
           class_standing: Math.round(Number(result.grades.final_overall_grade))

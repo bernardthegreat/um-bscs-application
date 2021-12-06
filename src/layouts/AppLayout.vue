@@ -103,7 +103,7 @@
                 </q-item-section>
                 <q-item-section>ATTENDANCE</q-item-section>
               </q-item> -->
-              <q-item clickable v-ripple to="/students/examinations">
+              <!-- <q-item clickable v-ripple to="/students/examinations">
                 <q-item-section avatar>
                   <q-icon color="primary" name="fas fa-question-circle" />
                 </q-item-section>
@@ -114,7 +114,7 @@
                   <q-icon color="primary" name="fas fa-graduation-cap" />
                 </q-item-section>
                 <q-item-section>GRADES</q-item-section>
-              </q-item>
+              </q-item> -->
             </q-list>
           </q-card>
         </div>
